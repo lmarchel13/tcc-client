@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { NavLink } from "react-router-dom";
 import Link from "@material-ui/core/Link";
 
 import SearchBar from "./SearchBar";
@@ -75,20 +76,42 @@ const Header = ({ authedUser }) => {
         </div>
       </div>
       <div style={{ alignSelf: "flex-end", marginBottom: 15 }}>
-        <Link
-          style={{ color: blueColor, textDecoration: "none", marginRight: 10, fontFamily: "Futura" }}
-          href="#"
-          onClick={() => {}}
-        >
-          Crie a sua conta
-        </Link>
-        <Link
-          style={{ color: blueColor, textDecoration: "none", marginLeft: 10, fontFamily: "Futura" }}
-          href="#"
-          onClick={() => {}}
-        >
-          Entrar
-        </Link>
+        {!authedUser && (
+          <NavLink to="/signup" exact style={{ textDecoration: "none" }}>
+            <Link style={{ color: blueColor, marginRight: 10, fontFamily: "Futura" }} href="#" onClick={() => {}}>
+              Crie a sua conta
+            </Link>
+          </NavLink>
+        )}
+        {!authedUser ? (
+          <NavLink
+            to="/signin"
+            exact
+            style={{
+              textDecoration: "none",
+              color: blueColor,
+              textDecoration: "none",
+              marginLeft: 10,
+              fontFamily: "Futura",
+            }}
+          >
+            Entrar
+          </NavLink>
+        ) : (
+          <NavLink
+            to="/signout"
+            exact
+            style={{
+              textDecoration: "none",
+              color: blueColor,
+              textDecoration: "none",
+              marginLeft: 10,
+              fontFamily: "Futura",
+            }}
+          >
+            Sair
+          </NavLink>
+        )}
       </div>
     </div>
   );
