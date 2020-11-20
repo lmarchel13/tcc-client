@@ -1,13 +1,20 @@
 import React from "react";
 import { connect } from "react-redux";
 import { NavLink } from "react-router-dom";
-import Link from "@material-ui/core/Link";
 
 import SearchBar from "./SearchBar";
 import { blueBg, blueColor } from "../utils/colors";
 import logo from "../assets/logo.png";
 
 const Header = ({ authedUser }) => {
+  const links = [
+    { to: "/categories", text: "Categorias" },
+    { to: "/offers", text: "Ofertas do dia" },
+    { to: "/transactions", text: "Histórico" },
+    { to: "/companies", text: "Lojas" },
+    { to: "/sell", text: "Vender" },
+  ];
+
   return (
     <div
       style={{
@@ -24,93 +31,88 @@ const Header = ({ authedUser }) => {
         <img src={logo} alt="Logo" height="100" width="300" />
       </div>
       <div style={{ marginRight: 100, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-        <div style={{}}>
+        <div>
           <SearchBar />
         </div>
         <div style={{ display: "flex", justifyContent: "space-evenly", marginBottom: 15 }}>
-          <div>
-            <Link
-              style={{ color: blueColor, textDecoration: "none", flex: 1, fontFamily: "Futura" }}
-              href="#"
-              onClick={() => {}}
-            >
-              Categorias
-            </Link>
-          </div>
-          <div>
-            <Link
-              style={{ color: blueColor, textDecoration: "none", flex: 1, fontFamily: "Futura" }}
-              href="#"
-              onClick={() => {}}
-            >
-              Ofertas do dia
-            </Link>
-          </div>
-          <div>
-            <Link
-              style={{ color: blueColor, textDecoration: "none", flex: 1, fontFamily: "Futura" }}
-              href="#"
-              onClick={() => {}}
-            >
-              Histórico
-            </Link>
-          </div>
-          <div>
-            <Link
-              style={{ color: blueColor, textDecoration: "none", flex: 1, fontFamily: "Futura" }}
-              href="#"
-              onClick={() => {}}
-            >
-              Lojas
-            </Link>
-          </div>
-          <div>
-            <Link
-              style={{ color: blueColor, textDecoration: "none", flex: 1, fontFamily: "Futura" }}
-              href="#"
-              onClick={() => {}}
-            >
-              Vender
-            </Link>
-          </div>
+          {links.map(({ to, text }) => {
+            return (
+              <div key={to}>
+                <NavLink
+                  to={to}
+                  exact
+                  style={{
+                    color: blueColor,
+                    textDecoration: "none",
+                    flex: 1,
+                    fontFamily: "Futura",
+                  }}
+                >
+                  {text}
+                </NavLink>
+              </div>
+            );
+          })}
         </div>
       </div>
       <div style={{ alignSelf: "flex-end", marginBottom: 15 }}>
+        {/* User not logged in */}
         {!authedUser && (
-          <NavLink to="/signup" exact style={{ textDecoration: "none" }}>
-            <Link style={{ color: blueColor, marginRight: 10, fontFamily: "Futura" }} href="#" onClick={() => {}}>
+          <div>
+            <NavLink
+              to="/signup"
+              exact
+              style={{
+                textDecoration: "none",
+                color: blueColor,
+                marginLeft: 10,
+                fontFamily: "Futura",
+              }}
+            >
               Crie a sua conta
-            </Link>
-          </NavLink>
+            </NavLink>
+            <NavLink
+              to="/signin"
+              exact
+              style={{
+                textDecoration: "none",
+                color: blueColor,
+                marginLeft: 10,
+                fontFamily: "Futura",
+              }}
+            >
+              Entrar
+            </NavLink>
+          </div>
         )}
-        {!authedUser ? (
-          <NavLink
-            to="/signin"
-            exact
-            style={{
-              textDecoration: "none",
-              color: blueColor,
-              textDecoration: "none",
-              marginLeft: 10,
-              fontFamily: "Futura",
-            }}
-          >
-            Entrar
-          </NavLink>
-        ) : (
-          <NavLink
-            to="/signout"
-            exact
-            style={{
-              textDecoration: "none",
-              color: blueColor,
-              textDecoration: "none",
-              marginLeft: 10,
-              fontFamily: "Futura",
-            }}
-          >
-            Sair
-          </NavLink>
+        {/* User logged in */}
+        {authedUser && (
+          <div>
+            <NavLink
+              to="/my-companies"
+              exact
+              style={{
+                textDecoration: "none",
+                color: blueColor,
+                marginRight: 10,
+                fontFamily: "Futura",
+              }}
+            >
+              Anunciar
+            </NavLink>
+            <NavLink
+              to="/signout"
+              exact
+              style={{
+                textDecoration: "none",
+                color: blueColor,
+                marginLeft: 10,
+                fontFamily: "Futura",
+              }}
+            >
+              Sair
+            </NavLink>
+          </div>
         )}
       </div>
     </div>

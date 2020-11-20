@@ -5,8 +5,14 @@ const instance = axios.create({
   baseURL: config.API_BASE_URL,
 });
 
-export const errorHandler = (err) => {
-  return { err: err.response.data };
+const errorHandler = (err = {}) => {
+  return { err: err.response && err.response.data ? err.response.data : "Erro desconhecido. Tente novamente" };
+};
+
+const buildHeaders = ({ token }) => {
+  return {
+    Authorization: `Bearer ${token}`,
+  };
 };
 
 export const register = async (payload) => {
@@ -25,6 +31,29 @@ export const login = async (payload) => {
 
   try {
     const { data } = await instance.post(endpoint, payload);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getCategories = async () => {
+  const endpoint = `/categories`;
+
+  try {
+    const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getUserCompanies = async ({ token }) => {
+  const endpoint = `/companies/my-companies`;
+  console.log("token", token);
+
+  try {
+    const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
     return { data };
   } catch (error) {
     return errorHandler(error);

@@ -88,7 +88,7 @@ const Login = ({ dispatch }) => {
   );
 };
 
-const mapStateToProps = ({}) => {
+const mapStateToProps = () => {
   return {};
 };
 

@@ -10,7 +10,7 @@ import SnackBar from "./SnackBar";
 import { blueBg, blueColor } from "../utils/colors";
 import { API } from "../providers";
 
-const Register = ({ dispatch }) => {
+const Register = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");

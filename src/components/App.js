@@ -6,18 +6,23 @@ import Header from "./Header";
 import Register from "./Register";
 import Login from "./Login";
 import Logout from "./Logout";
+import Categories from "./Categories";
+import MyCompanies from "./MyCompanies";
 
-const App = ({ dispatch, loading }) => {
+const App = () => {
   return (
     <Router>
       <Header />
+
       <Route path="/signup" exact component={Register} />
       <Route path="/signin" exact component={Login} />
       <Route path="/signout" exact component={Logout} />
+      <Route path="/categories" exact component={Categories} />
+      <Route path="/my-companies" exact component={MyCompanies} />
     </Router>
   );
 };
 
-const mapStateToProps = ({ authedUser }) => ({ loading: !authedUser });
+const mapStateToProps = () => ({});
 
 export default connect(mapStateToProps)(App);
