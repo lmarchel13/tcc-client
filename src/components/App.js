@@ -8,6 +8,7 @@ import Login from "./Login";
 import Logout from "./Logout";
 import Categories from "./Categories";
 import MyCompanies from "./MyCompanies";
+import CompanyCard from "./CompanyCard";
 
 const App = () => {
   return (

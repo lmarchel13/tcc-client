@@ -50,10 +50,31 @@ export const getCategories = async () => {
 
 export const getUserCompanies = async ({ token }) => {
   const endpoint = `/companies/my-companies`;
-  console.log("token", token);
 
   try {
     const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getPlans = async () => {
+  const endpoint = "/plans";
+
+  try {
+    const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const createCompany = async (payload, token) => {
+  const endpoint = "/companies";
+
+  try {
+    const { data } = await instance.post(endpoint, payload, { headers: buildHeaders({ token }) });
     return { data };
   } catch (error) {
     return errorHandler(error);

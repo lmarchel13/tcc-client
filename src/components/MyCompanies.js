@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
+
 import { connect } from "react-redux";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
 
 import SnackBar from "./SnackBar";
 import CreateCompanyModal from "./CreateCompanyModal";
 import { API, Cache } from "../providers";
 import { blueBg, blueColor } from "../utils/colors";
+import { addCompanies } from "../actions/company";
+import CompanyCard from "./CompanyCard";
 
-const MyCompanies = ({ authedUser }) => {
-  const [companies, setCompanies] = useState([]);
+const MyCompanies = ({ authedUser, dispatch, companies }) => {
+  const history = useHistory();
+  if (!authedUser) history.push("/signin");
+
+  // const [companies, setCompanies] = useState([]);
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [openModal, setOpenModal] = React.useState(false);
@@ -21,7 +30,9 @@ const MyCompanies = ({ authedUser }) => {
 
   useEffect(() => {
     const fetchUserCompanies = async () => {
+      console.log("authedUser", authedUser);
       if (!authedUser) return;
+      console.log("fetchUserCompanies called");
       resetSnackBarState();
 
       const token = Cache.getToken();
@@ -33,16 +44,15 @@ const MyCompanies = ({ authedUser }) => {
         return;
       }
 
-      setCompanies(data);
+      return data;
     };
 
-    fetchUserCompanies();
-  }, [authedUser]);
+    fetchUserCompanies().then((data) => dispatch(addCompanies(data)));
+  }, [authedUser, dispatch]);
 
   return (
     <div>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
-
       {!companies.length && (
         <Paper
           elevation={3}
@@ -68,14 +78,34 @@ const MyCompanies = ({ authedUser }) => {
           </Button>
         </Paper>
       )}
+      {!!companies.length && (
+        <div>
+          <div
+            style={{
+              position: "fixed",
+              right: 50,
+              bottom: 50,
+            }}
+          >
+            <Fab aria-label="add" style={{ backgroundColor: blueColor, color: blueBg }}>
+              <AddIcon />
+            </Fab>
+          </div>
+          <div style={{ width: "70%", margin: "0 auto", marginTop: 32, display: "flex", flex: 1, flexWrap: "wrap" }}>
+            {companies.map((company) => {
+              return <CompanyCard data={company} key={company.id} />;
+            })}
+          </div>
+        </div>
+      )}
 
       <CreateCompanyModal open={openModal} setOpen={setOpenModal} userId={authedUser} />
     </div>
   );
 };
 
-const mapStateToProps = ({ authedUser }) => {
-  return { authedUser };
+const mapStateToProps = ({ authedUser, companies }) => {
+  return { authedUser, companies };
 };
 
 export default connect(mapStateToProps)(MyCompanies);
