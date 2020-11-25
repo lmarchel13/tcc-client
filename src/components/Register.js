@@ -60,7 +60,7 @@ const Register = () => {
   };
 
   return (
-    <div style={{ width: "30%", margin: "0 auto", height: 500, marginTop: 32 }}>
+    <div style={{ width: "30%", margin: "0 auto", height: 500, marginTop: 64 }}>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
 
       <form noValidate autoComplete="off" onSubmit={onSubmit}>

@@ -37,7 +37,7 @@ const Login = ({ dispatch }) => {
     } else {
       const { userId, jwt } = data;
 
-      dispatch(setAuthedUser(userId));
+      dispatch(setAuthedUser({ userId, jwt }));
       Cache.setToken(jwt);
 
       history.push("/");
@@ -45,7 +45,7 @@ const Login = ({ dispatch }) => {
   };
 
   return (
-    <div style={{ width: "30%", margin: "0 auto", height: 500, marginTop: 32 }}>
+    <div style={{ width: "30%", margin: "0 auto", height: 500, marginTop: 64 }}>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
       <form noValidate autoComplete="off" onSubmit={onSubmit}>
         <Paper style={{ height: 300 }}>
@@ -80,7 +80,7 @@ const Login = ({ dispatch }) => {
             style={{ marginTop: 32, backgroundColor: blueBg, width: "100%", color: blueColor }}
             type="submit"
           >
-            Enviar
+            Entrar
           </Button>
         </div>
       </form>

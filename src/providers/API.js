@@ -80,3 +80,24 @@ export const createCompany = async (payload, token) => {
     return errorHandler(error);
   }
 };
+
+export const updateCompany = async (id, payload, token) => {
+  const endpoint = `/companies/${id}`;
+
+  try {
+    const { data } = await instance.patch(endpoint, payload, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const deleteCompany = async (id, token) => {
+  const endpoint = `/companies/${id}`;
+  try {
+    await instance.delete(endpoint, { headers: buildHeaders({ token }) });
+    return {};
+  } catch (error) {
+    return errorHandler(error);
+  }
+};

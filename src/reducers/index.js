@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import { loadingBarReducer as loadingBar } from "react-redux-loading";
+import { loadingBarReducer as loadingBar } from "react-redux-loading-bar";
 
 import authedUser from "./authedUser";
 import companies from "./company";

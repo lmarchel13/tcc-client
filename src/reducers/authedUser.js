@@ -1,14 +1,15 @@
 import { SET_AUTHED_USER, REMOVE_AUTHED_USER } from "../actions/authedUser";
-
-const KEY = "authedUser";
+import { Cache } from "../providers";
 
 const reducer = (state = null, action) => {
   switch (action.type) {
     case SET_AUTHED_USER:
-      localStorage.setItem(KEY, action.id);
-      return action.id;
+      Cache.setToken(action.payload.jwt);
+      Cache.setUserId(action.payload.userId);
+      return action.payload;
     case REMOVE_AUTHED_USER:
-      localStorage.removeItem(KEY);
+      Cache.clearToken();
+      Cache.clearUserId();
       return null;
     default:
       return state;

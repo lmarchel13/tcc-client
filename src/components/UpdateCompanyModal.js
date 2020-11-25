@@ -14,7 +14,6 @@ import FormLabel from "@material-ui/core/FormLabel";
 import Divider from "@material-ui/core/Divider";
 import FormGroup from "@material-ui/core/FormGroup";
 import Checkbox from "@material-ui/core/Checkbox";
-import SnackBar from "./SnackBar";
 
 import TimePicker from "./TimePicker";
 
@@ -23,7 +22,7 @@ import { API, Cache, IbgeClient } from "../providers";
 import { makeStyles } from "@material-ui/core/styles";
 import { blueBg, blueColor } from "../utils/colors";
 import { Button, Paper } from "@material-ui/core";
-import { addCompany } from "../actions/company";
+import { updateCompany } from "../actions/company";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -46,27 +45,27 @@ const WEEK_DAYS = [
   { value: 6, label: "D" },
 ];
 
-const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [postcode, setPostcode] = useState("");
-  const [documentType, setDocumentType] = useState("");
-  const [document, setDocument] = useState("");
-  const [startTime, setStartTime] = useState("08:00");
-  const [endTime, setEndTime] = useState("17:00");
-  const [openDays, setOpenDays] = useState([]);
-  const [plan, setPlan] = useState("");
-
-  const [foundCity, setFoundCity] = useState("");
+function UpdateCompanyModal({ open, setOpen, data, dispatch }) {
+  const [name, setName] = useState(data.name);
+  const [description, setDescription] = useState(data.description);
+  const [email, setEmail] = useState(data.email);
+  const [phone, setPhone] = useState(data.phone);
+  const [address, setAddress] = useState(data.address);
+  const [city, setCity] = useState(data.city);
+  const [state, setState] = useState(data.state);
+  const [postcode, setPostcode] = useState(data.postcode);
+  const [documentType, setDocumentType] = useState(data.documentType);
+  const [document, setDocument] = useState(data.document);
+  const [startTime, setStartTime] = useState(data.startTime);
+  const [endTime, setEndTime] = useState(data.endTime);
+  const [openDays, setOpenDays] = useState(data.openDays.map((i) => +i));
+  const [plan, setPlan] = useState(data.plan.id);
 
   const [cityOptions, setCityOptions] = useState([]);
   const [stateOptions, setStateOptions] = useState([]);
   const [planOptions, setPlanOptions] = useState([]);
+
+  const [previousState, setPreviousState] = useState(data.state);
 
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = React.useState(false);
@@ -81,6 +80,7 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
   const left = 50;
 
   const onSubmit = async () => {
+    const companyId = data.id;
     const payload = {
       name,
       description,
@@ -99,19 +99,21 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
     };
 
     const token = Cache.getToken();
-    resetSnackBarState();
 
     try {
-      const { err, data } = await API.createCompany(payload, token);
+      const { err, data } = await API.updateCompany(companyId, payload, token);
+      console.log({ err, data });
       if (err) {
         setSnackBarData({ text: err.description, severity: "error" });
-      } else {
-        setSnackBarData({ text: "Empresa criada com sucesso", severity: "success" });
-        await dispatch(addCompany(data));
+        setOpenSnackBar(true);
+        return;
       }
 
-      setOpenSnackBar(true);
-      setOpen(false);
+      dispatch(updateCompany(data)).then(() => {
+        setOpen(false);
+        setSnackBarData({ text: "Empresa atualizada com sucesso", severity: "success" });
+        setOpenSnackBar(true);
+      });
     } catch (error) {
       console.log(error);
       setSnackBarData({ text: error.message, severity: "error" });
@@ -130,7 +132,6 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
 
     const fetchStates = async () => {
       const { err, data } = await IbgeClient.getStates();
-
       if (err) return;
 
       setStateOptions(data);
@@ -141,13 +142,16 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
   }, []);
 
   useEffect(() => {
-    setCityOptions([]);
     const fetchCities = async () => {
+      if (previousState !== state) setCity("");
+
+      setPreviousState(state);
+      setCityOptions([]);
       const { err, data } = await IbgeClient.getCitiesByState(state);
+
       if (err) return;
 
       setCityOptions(data);
-      setCity(foundCity);
     };
 
     fetchCities();
@@ -161,11 +165,11 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
     time = setTimeout(async () => {
       try {
         const {
-          data: { localidade, uf, logradouro },
+          data: { localidade, uf },
         } = await IbgeClient.getAddressByPostCode(e.target.value);
 
-        setFoundCity(localidade);
         setState(uf);
+        setCity(localidade);
       } catch (error) {
         console.log(error);
       }
@@ -189,7 +193,7 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
 
   const handleOpenDaysChange = (day) => {
     if (openDays.includes(day)) {
-      setOpenDays(openDays.filter((val) => val !== day));
+      setOpenDays(openDays.filter((val) => +val !== +day));
     } else {
       setOpenDays([...openDays, day]);
     }
@@ -213,7 +217,7 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
           }}
           className={classes.paper}
         >
-          <h2 style={{ marginBottom: 32, fontFamily: "Futura" }}>Criar empresa</h2>
+          <h2 style={{ marginBottom: 32, fontFamily: "Futura" }}>Editar empresa</h2>
 
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
             <TextField
@@ -222,6 +226,8 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setName(e.target.value);
               }}
+              value={name}
+              InputLabelProps={{ shrink: true }}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
@@ -231,6 +237,8 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setDescription(e.target.value);
               }}
+              InputLabelProps={{ shrink: true }}
+              value={description}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
@@ -240,6 +248,8 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              InputLabelProps={{ shrink: true }}
+              value={email}
             />
             <TextField
               label="Telefone"
@@ -247,6 +257,8 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setPhone(e.target.value);
               }}
+              InputLabelProps={{ shrink: true }}
+              value={phone}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
@@ -256,19 +268,35 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setAddress(e.target.value);
               }}
+              InputLabelProps={{ shrink: true }}
+              value={address}
             />
-            <TextField label="CEP" style={{ flex: 1, marginLeft: 8 }} onChange={handlePostcodeChange} />
+            <TextField
+              label="CEP"
+              style={{ flex: 1, marginLeft: 8 }}
+              onChange={handlePostcodeChange}
+              value={postcode}
+              InputLabelProps={{ shrink: true }}
+            />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }}>
             <FormControl style={{ flex: 1, marginRight: 8 }}>
               <InputLabel id="state-select">UF</InputLabel>
-              <Select id="state-select" value={state} onChange={(e) => setState(e.target.value)}>
+              <Select
+                id="state-select"
+                value={state}
+                onChange={(e) => {
+                  console.log("state change", e.target.value);
+                  setState(e.target.value);
+                }}
+                InputLabelProps={{ shrink: true }}
+              >
                 {stateOptions &&
                   stateOptions.length &&
-                  stateOptions.map(({ state }) => {
+                  stateOptions.map(({ state: val }) => {
                     return (
-                      <MenuItem key={state} value={state}>
-                        {state}
+                      <MenuItem key={val} value={val}>
+                        {val}
                       </MenuItem>
                     );
                   })}
@@ -276,7 +304,12 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
             </FormControl>
             <FormControl style={{ flex: 9, marginLeft: 8 }}>
               <InputLabel id="city-select">Cidade</InputLabel>
-              <Select id="city-select" value={city} onChange={(e) => setCity(e.target.value)}>
+              <Select
+                id="city-select"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              >
                 {cityOptions &&
                   cityOptions.length &&
                   cityOptions.map(({ city }) => {
@@ -289,7 +322,7 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               </Select>
             </FormControl>
           </div>
-          <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }}>
+          <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }} InputLabelProps={{ shrink: true }}>
             <FormControl component="fieldset">
               <FormLabel component="legend">Documento</FormLabel>
               <RadioGroup row aria-label="position" name="position">
@@ -298,12 +331,14 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
                   control={<Radio style={{ color: blueColor }} />}
                   label="CPF"
                   onChange={(e) => setDocumentType(e.target.value)}
+                  checked={documentType === "CPF"}
                 />
                 <FormControlLabel
                   value="CNPJ"
                   control={<Radio style={{ color: blueColor }} />}
                   label="CNPJ"
                   onChange={(e) => setDocumentType(e.target.value)}
+                  checked={documentType === "CNPJ"}
                 />
               </RadioGroup>
             </FormControl>
@@ -313,11 +348,15 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setDocument(e.target.value);
               }}
+              InputLabelProps={{ shrink: true }}
+              value={document}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }}>
             <div style={{ alignSelf: "center", marginRight: 8, flex: 1 }}>
-              <InputLabel id="start-end-time-label">Horário de funcionamento</InputLabel>
+              <InputLabel shrink id="start-end-time-label">
+                Horário de funcionamento
+              </InputLabel>
             </div>
             <div style={{ display: "flex", marginLeft: 8, flex: 1 }}>
               <TimePicker label="Abertura" time={startTime} setTime={setStartTime} defaultValue="08:00" />
@@ -334,11 +373,17 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
                     return (
                       <FormControlLabel
                         key={day.value}
-                        value={day.value}
-                        control={<Checkbox style={{ color: blueColor, margin: 0, padding: 0 }} />}
+                        control={
+                          <Checkbox
+                            value={day.value}
+                            style={{ color: blueColor, margin: 0, padding: 0 }}
+                            checked={openDays.includes(+day.value)}
+                            onChange={() => handleOpenDaysChange(+day.value)}
+                          />
+                        }
                         label={day.label}
                         labelPlacement="top"
-                        onChange={() => handleOpenDaysChange(day.value)}
+                        InputLabelProps={{ shrink: true }}
                       />
                     );
                   })}
@@ -354,7 +399,12 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               {planOptions.map(({ id, name, value, selected }) => {
                 return (
                   <Paper
-                    style={{ height: 120, width: 160, margin: 16, border: selected ? `2px solid ${blueColor}` : "" }}
+                    style={{
+                      height: 120,
+                      width: 160,
+                      margin: 16,
+                      border: selected || plan === id ? `2px solid ${blueColor}` : "",
+                    }}
                     onClick={() => handlePlan(id)}
                     key={id}
                   >
@@ -386,17 +436,16 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
             style={{ backgroundColor: blueBg, color: blueColor, width: "70%", margin: "0 auto", marginTop: 16 }}
             onClick={onSubmit}
           >
-            Criar
+            Atualizar
           </Button>
         </div>
       </Modal>
-      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
     </div>
   );
+}
+
+const mapStateToProps = ({ dispatch }, ownProps) => {
+  return { ...ownProps, dispatch };
 };
 
-const mapStateToProps = ({ authedUser, companies }) => {
-  return { authedUser, companies };
-};
-
-export default connect(mapStateToProps)(CreateCompanyModal);
+export default connect(mapStateToProps)(UpdateCompanyModal);

@@ -6,7 +6,7 @@ import SearchBar from "./SearchBar";
 import { blueBg, blueColor } from "../utils/colors";
 import logo from "../assets/logo.png";
 
-const Header = ({ authedUser }) => {
+const Header = ({ loggedIn }) => {
   const links = [
     { to: "/categories", text: "Categorias" },
     { to: "/offers", text: "Ofertas do dia" },
@@ -57,7 +57,7 @@ const Header = ({ authedUser }) => {
       </div>
       <div style={{ alignSelf: "flex-end", marginBottom: 15 }}>
         {/* User not logged in */}
-        {!authedUser && (
+        {!loggedIn && (
           <div>
             <NavLink
               to="/signup"
@@ -86,7 +86,7 @@ const Header = ({ authedUser }) => {
           </div>
         )}
         {/* User logged in */}
-        {authedUser && (
+        {loggedIn && (
           <div>
             <NavLink
               to="/my-companies"
@@ -120,7 +120,7 @@ const Header = ({ authedUser }) => {
 };
 
 const mapStateToProps = ({ authedUser }) => {
-  return { authedUser };
+  return { authedUser, loggedIn: authedUser && !!authedUser.jwt && !!authedUser.userId };
 };
 
 export default connect(mapStateToProps)(Header);

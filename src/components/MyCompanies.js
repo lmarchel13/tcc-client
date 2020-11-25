@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 
 import { connect } from "react-redux";
 import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
+
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 
@@ -18,10 +18,10 @@ const MyCompanies = ({ authedUser, dispatch, companies }) => {
   const history = useHistory();
   if (!authedUser) history.push("/signin");
 
-  // const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [openModal, setOpenModal] = React.useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const resetSnackBarState = () => {
     setOpenSnackBar(false);
@@ -30,7 +30,6 @@ const MyCompanies = ({ authedUser, dispatch, companies }) => {
 
   useEffect(() => {
     const fetchUserCompanies = async () => {
-      console.log("authedUser", authedUser);
       if (!authedUser) return;
       console.log("fetchUserCompanies called");
       resetSnackBarState();
@@ -47,13 +46,15 @@ const MyCompanies = ({ authedUser, dispatch, companies }) => {
       return data;
     };
 
-    fetchUserCompanies().then((data) => dispatch(addCompanies(data)));
+    fetchUserCompanies().then(async (data) => {
+      await dispatch(addCompanies(data));
+      setLoading(false);
+    });
   }, [authedUser, dispatch]);
 
   return (
     <div>
-      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
-      {!companies.length && (
+      {!loading && !companies.length && (
         <Paper
           elevation={3}
           style={{
@@ -67,30 +68,12 @@ const MyCompanies = ({ authedUser, dispatch, companies }) => {
           }}
         >
           <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: 24 }}>
-            Nenhuma empresa encontrada. Deseja criar sua primeira empresa?
+            Nenhuma empresa encontrada. Adicione sua primeira empresa clicando no botão adicionar logo abaixo.
           </span>
-          <Button
-            variant="contained"
-            style={{ backgroundColor: blueBg, color: blueColor, width: "20%", margin: "0 auto", marginTop: 32 }}
-            onClick={() => setOpenModal(true)}
-          >
-            Criar empresa
-          </Button>
         </Paper>
       )}
-      {!!companies.length && (
+      {companies && !!companies.length && (
         <div>
-          <div
-            style={{
-              position: "fixed",
-              right: 50,
-              bottom: 50,
-            }}
-          >
-            <Fab aria-label="add" style={{ backgroundColor: blueColor, color: blueBg }}>
-              <AddIcon />
-            </Fab>
-          </div>
           <div style={{ width: "70%", margin: "0 auto", marginTop: 32, display: "flex", flex: 1, flexWrap: "wrap" }}>
             {companies.map((company) => {
               return <CompanyCard data={company} key={company.id} />;
@@ -99,7 +82,19 @@ const MyCompanies = ({ authedUser, dispatch, companies }) => {
         </div>
       )}
 
+      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
       <CreateCompanyModal open={openModal} setOpen={setOpenModal} userId={authedUser} />
+      <div
+        style={{
+          position: "fixed",
+          right: 50,
+          bottom: 50,
+        }}
+      >
+        <Fab aria-label="add" style={{ backgroundColor: blueColor, color: blueBg }} onClick={() => setOpenModal(true)}>
+          <AddIcon />
+        </Fab>
+      </div>
     </div>
   );
 };
