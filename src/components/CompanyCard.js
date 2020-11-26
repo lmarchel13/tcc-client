@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from "react";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
 
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -7,21 +8,14 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import UpdateCompanyModal from "./UpdateCompanyModal";
+import DeleteIcon from "@material-ui/icons/Delete";
+
 import ConfirmModal from "./ConfirmModal";
 import SnackBar from "./SnackBar";
 
 import { API, Cache } from "../providers";
 import { removeCompany } from "../actions/company";
-
-const WEEK_DAYS = {
-  0: "Segunda",
-  1: "Terça",
-  2: "Quarta",
-  3: "Quinta",
-  4: "Sexta",
-  5: "Sábado",
-  6: "Domingo",
-};
+import { blueColor } from "../utils/colors";
 
 const CompanyCard = ({ data, dispatch }) => {
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
@@ -31,35 +25,19 @@ const CompanyCard = ({ data, dispatch }) => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
   if (!data) return;
-  const { id, name, description, email, phone, services } = data;
+  const { id, name, documentType, document } = data;
 
   const buildAddress = (data) => {
     const { address, city, state, postcode } = data;
     return `${address} - ${city}, ${state} - ${postcode}`;
   };
 
-  const buildDocument = (data) => {
-    const { documentType, document } = data;
-    return `${documentType}: ${document}`;
-  };
-
-  const buildSchedule = (data) => {
-    const { startTime, endTime } = data;
-    return `${startTime} até ${endTime}`;
-  };
-
-  const buildOpenDays = (data) => {
-    const { openDays } = data;
-
-    return openDays.map((day) => WEEK_DAYS[+day]).join(", ");
-  };
-
   const buildPlan = (data) => {
     const {
-      plan: { name, value },
+      plan: { name },
     } = data;
 
-    return `${name} (${new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)})`;
+    return `${name}`;
   };
 
   const resetSnackBarState = () => {
@@ -109,40 +87,34 @@ const CompanyCard = ({ data, dispatch }) => {
         variant="outlined"
       >
         <CardContent>
-          <Typography variant="h5" component="h2" style={{ textAlign: "center" }}>
+          <DeleteIcon
+            style={{ float: "right", fontSize: 18, color: blueColor }}
+            onClick={() => setOpenConfirmModal(true)}
+          />
+          <Typography variant="h5" component="h2" style={{ textAlign: "center", color: blueColor, marginBottom: 16 }}>
             {name}
           </Typography>
-          <Typography style={{ marginBottom: 12 }} color="textSecondary">
-            {description}
+          <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
+            <strong>{documentType}:</strong> {document}
           </Typography>
-          <Typography variant="body2" component="p">
-            {buildDocument(data)}
+          <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
+            <strong>Endereço:</strong> {buildAddress(data)}
           </Typography>
-          <Typography variant="body2" component="p" style={{ marginBottom: 12 }}>
-            {buildAddress(data)}
-          </Typography>
-          <Typography variant="body2" component="p">
-            <strong>Email:</strong> {email}
-          </Typography>
-          <Typography variant="body2" component="p">
-            <strong>Telefone:</strong> {phone}
-          </Typography>
-          <Typography variant="body2" component="p">
-            <strong>Horario:</strong> {buildSchedule(data)}
-          </Typography>
-          <Typography variant="body2" component="p">
-            <strong>Dias:</strong> {buildOpenDays(data)}
-          </Typography>
-          <Typography variant="body2" component="p">
+          <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
             <strong>Plano:</strong> {buildPlan(data)}
           </Typography>
         </CardContent>
         <CardActions style={{ float: "right" }}>
-          <Button onClick={editCompany} size="small">
-            Editar
+          <Button size="small">
+            <Link
+              style={{ textDecoration: "none", color: blueColor }}
+              to={{ pathname: `/companies/${id}/services`, state: { data } }}
+            >
+              Serviços
+            </Link>
           </Button>
-          <Button onClick={() => setOpenConfirmModal(true)} size="small">
-            Remover
+          <Button onClick={editCompany} size="small" style={{ color: blueColor }}>
+            Editar
           </Button>
         </CardActions>
       </Card>

@@ -9,7 +9,7 @@ const reducer = (state = [], action) => {
     case REMOVE_COMPANY:
       return state.filter((company) => company.id !== action.id);
     case UPDATE_COMPANY:
-      return [state.filter((company) => company.id !== action.payload.id), action.payload];
+      return [...state.filter((company) => company.id !== action.payload.id), action.payload];
     default:
       return state;
   }

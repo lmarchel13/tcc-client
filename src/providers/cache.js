@@ -24,3 +24,10 @@ export const getUserId = () => {
 export const clearUserId = () => {
   return localStorage.removeItem(USER_ID);
 };
+
+export const isUserLoggedIn = () => {
+  const token = getToken();
+  const userId = getUserId();
+
+  return !!token && !!userId;
+};

@@ -14,11 +14,10 @@ import { blueBg, blueColor } from "../utils/colors";
 import { addCompanies } from "../actions/company";
 import CompanyCard from "./CompanyCard";
 
-const MyCompanies = ({ authedUser, dispatch, companies }) => {
+const MyCompanies = ({ authedUser, dispatch, companies = [] }) => {
   const history = useHistory();
-  if (!authedUser) history.push("/signin");
-
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -29,18 +28,22 @@ const MyCompanies = ({ authedUser, dispatch, companies }) => {
   };
 
   useEffect(() => {
-    const fetchUserCompanies = async () => {
-      if (!authedUser) return;
-      console.log("fetchUserCompanies called");
-      resetSnackBarState();
+    const ok = Cache.isUserLoggedIn();
+    setIsAuthenticated(ok);
+    if (!ok) history.push("/signin");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-      const token = Cache.getToken();
-      const { data, err } = await API.getUserCompanies({ userId: authedUser, token });
+  useEffect(() => {
+    const fetchUserCompanies = async () => {
+      resetSnackBarState();
+      if (!authedUser || !isAuthenticated) return [];
+
+      const { data = [], err } = await API.getUserCompanies({ userId: authedUser.userId, token: authedUser.jwt });
 
       if (err) {
         setSnackBarData({ text: err.description, severity: "error" });
         setOpenSnackBar(true);
-        return;
       }
 
       return data;
@@ -50,11 +53,19 @@ const MyCompanies = ({ authedUser, dispatch, companies }) => {
       await dispatch(addCompanies(data));
       setLoading(false);
     });
-  }, [authedUser, dispatch]);
+  }, [authedUser, dispatch, isAuthenticated]);
 
   return (
     <div>
-      {!loading && !companies.length && (
+      {!loading && companies.length > 0 ? (
+        <div>
+          <div style={{ width: "70%", margin: "0 auto", marginTop: 32, display: "flex", flex: 1, flexWrap: "wrap" }}>
+            {companies.map((company, index) => {
+              return <CompanyCard data={company} key={index} />;
+            })}
+          </div>
+        </div>
+      ) : (
         <Paper
           elevation={3}
           style={{
@@ -71,15 +82,6 @@ const MyCompanies = ({ authedUser, dispatch, companies }) => {
             Nenhuma empresa encontrada. Adicione sua primeira empresa clicando no botão adicionar logo abaixo.
           </span>
         </Paper>
-      )}
-      {companies && !!companies.length && (
-        <div>
-          <div style={{ width: "70%", margin: "0 auto", marginTop: 32, display: "flex", flex: 1, flexWrap: "wrap" }}>
-            {companies.map((company) => {
-              return <CompanyCard data={company} key={company.id} />;
-            })}
-          </div>
-        </div>
       )}
 
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
@@ -100,7 +102,9 @@ const MyCompanies = ({ authedUser, dispatch, companies }) => {
 };
 
 const mapStateToProps = ({ authedUser, companies }) => {
-  return { authedUser, companies };
+  const loggedIn = !!authedUser && !!authedUser.jwt && !!authedUser.userId;
+  console.log("companies", companies);
+  return { authedUser, companies, loggedIn };
 };
 
 export default connect(mapStateToProps)(MyCompanies);

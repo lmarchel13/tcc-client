@@ -9,8 +9,12 @@ import Login from "./Login";
 import Logout from "./Logout";
 import Categories from "./Categories";
 import MyCompanies from "./MyCompanies";
-import { Cache } from "../providers";
+import CompanyServices from "./CompanyServices";
+import Service from "./Service";
+
+import { API, Cache } from "../providers";
 import { setAuthedUser } from "../actions/authedUser";
+import { addCategories } from "../actions/category";
 
 const App = ({ dispatch }) => {
   useEffect(() => {
@@ -19,7 +23,14 @@ const App = ({ dispatch }) => {
       userId: Cache.getUserId(),
     };
 
+    const fetchCategories = async () => {
+      const { data = [] } = await API.getCategories();
+
+      dispatch(addCategories(data));
+    };
+
     dispatch(setAuthedUser(payload));
+    fetchCategories();
   }, [dispatch]);
 
   return (
@@ -33,6 +44,8 @@ const App = ({ dispatch }) => {
         <Route path="/signout" exact component={Logout} />
         <Route path="/categories" exact component={Categories} />
         <Route path="/my-companies" exact component={MyCompanies} />
+        <Route path="/companies/:companyId/services" exact component={CompanyServices} />
+        <Route path="/services/:serviceId" exact component={Service} />
       </Fragment>
     </Router>
   );

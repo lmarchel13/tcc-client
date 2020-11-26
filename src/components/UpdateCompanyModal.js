@@ -16,6 +16,7 @@ import FormGroup from "@material-ui/core/FormGroup";
 import Checkbox from "@material-ui/core/Checkbox";
 
 import TimePicker from "./TimePicker";
+import SnackBar from "./SnackBar";
 
 import { API, Cache, IbgeClient } from "../providers";
 
@@ -95,25 +96,27 @@ function UpdateCompanyModal({ open, setOpen, data, dispatch }) {
       startTime,
       endTime,
       openDays,
-      plan,
+      plan: plan.id,
     };
 
     const token = Cache.getToken();
 
     try {
+      resetSnackBarState();
+
       const { err, data } = await API.updateCompany(companyId, payload, token);
-      console.log({ err, data });
+
       if (err) {
         setSnackBarData({ text: err.description, severity: "error" });
         setOpenSnackBar(true);
         return;
       }
 
-      dispatch(updateCompany(data)).then(() => {
-        setOpen(false);
-        setSnackBarData({ text: "Empresa atualizada com sucesso", severity: "success" });
-        setOpenSnackBar(true);
-      });
+      await dispatch(updateCompany(data));
+      setOpen(false);
+
+      setSnackBarData({ text: "Empresa atualizada com sucesso", severity: "success" });
+      setOpenSnackBar(true);
     } catch (error) {
       console.log(error);
       setSnackBarData({ text: error.message, severity: "error" });
@@ -176,11 +179,11 @@ function UpdateCompanyModal({ open, setOpen, data, dispatch }) {
     }, 1500);
   };
 
-  const handlePlan = (id) => {
+  const handlePlan = (selectedPlan) => {
     const plans = planOptions.map((plan) => {
-      if (plan.id === id) {
+      if (plan.id === selectedPlan.id) {
         plan.selected = true;
-        setPlan(id);
+        setPlan(plan.id);
       } else {
         plan.selected = false;
       }
@@ -403,9 +406,9 @@ function UpdateCompanyModal({ open, setOpen, data, dispatch }) {
                       height: 120,
                       width: 160,
                       margin: 16,
-                      border: selected || plan === id ? `2px solid ${blueColor}` : "",
+                      border: selected || plan.id === id ? `2px solid ${blueColor}` : "",
                     }}
-                    onClick={() => handlePlan(id)}
+                    onClick={() => handlePlan({ id, name, value, selected: true })}
                     key={id}
                   >
                     <div
@@ -440,6 +443,7 @@ function UpdateCompanyModal({ open, setOpen, data, dispatch }) {
           </Button>
         </div>
       </Modal>
+      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
     </div>
   );
 }

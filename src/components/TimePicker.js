@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TimePickers({ label, time, setTime }) {
+export default function TimePickers({ label, time, setTime, style = {} }) {
   const classes = useStyles();
 
   return (
@@ -29,6 +29,7 @@ export default function TimePickers({ label, time, setTime }) {
         inputProps={{ step: 600 }}
         value={time}
         onChange={(e) => setTime(e.target.value)}
+        style={style}
       />
     </form>
   );

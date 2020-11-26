@@ -101,3 +101,35 @@ export const deleteCompany = async (id, token) => {
     return errorHandler(error);
   }
 };
+
+export const getCompanyServices = async (id) => {
+  const endpoint = `/companies/${id}/services`;
+  try {
+    const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const createService = async (companyId, payload, token) => {
+  const endpoint = `/companies/${companyId}/services`;
+  try {
+    const { data } = await instance.post(endpoint, payload, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getService = async (id) => {
+  const endpoint = `/services/${id}`;
+
+  try {
+    const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    console.log("error", error);
+    return errorHandler(error);
+  }
+};
