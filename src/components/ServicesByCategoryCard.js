@@ -31,7 +31,6 @@ const ServicesByCategoryCard = ({ service }) => {
     type,
     value,
     company: { id: companyId, name: companyName, openDays, startTime, endTime },
-    category,
   } = service;
 
   const buildOpenDays = ({ openDays, startTime, endTime }) => {

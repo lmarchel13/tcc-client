@@ -213,3 +213,14 @@ export const updateUser = async (payload, token) => {
     return errorHandler(error);
   }
 };
+
+export const searchServices = async (term) => {
+  const endpoint = `/services/search?term=${term}`;
+
+  try {
+    const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
