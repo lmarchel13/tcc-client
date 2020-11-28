@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { makeStyles } from "@material-ui/core/styles";
@@ -51,12 +51,21 @@ const CategoryCard = ({ data: { id, name, icon } } = {}) => {
   const IconComponent = ICONS[icon] || Build;
   const history = useHistory();
 
+  const [isHover, setIsHover] = useState(false);
+
   const onClick = (id) => {
     history.push(`/categories/${id}`);
   };
 
   return (
-    <div className={classes.root} id={id} onClick={() => onClick(id)}>
+    <div
+      className={classes.root}
+      id={id}
+      onClick={() => onClick(id)}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+      style={{ border: isHover ? `0.6px solid ${blueColor}` : "0.6px solid transparent" }}
+    >
       <div style={{ display: "flex", flex: 1, justifyContent: "center" }}>
         <IconComponent
           style={{

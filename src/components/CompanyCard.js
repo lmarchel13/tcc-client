@@ -82,22 +82,6 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
 
   return (
     <Fragment>
-      {editable && (
-        <Fragment>
-          <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
-          <UpdateCompanyModal setOpen={setOpenUpdateModal} open={openUpdateModal} data={data} />
-          <ConfirmModal
-            setOpen={setOpenConfirmModal}
-            open={openConfirmModal}
-            title="Remover empresa"
-            text="Deseja realmente remover essa empresa?"
-            onSubmit={() => {
-              deleteCompany();
-            }}
-          />
-        </Fragment>
-      )}
-
       <Card
         style={{
           minWidth: 500,
@@ -153,6 +137,19 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
             </Button>
           )}
         </CardActions>
+        {editable && (
+          <Fragment>
+            <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
+            <UpdateCompanyModal setOpen={setOpenUpdateModal} open={openUpdateModal} data={data} />
+            <ConfirmModal
+              setOpen={setOpenConfirmModal}
+              open={openConfirmModal}
+              title="Remover empresa"
+              text="Deseja realmente remover essa empresa?"
+              onSubmit={deleteCompany}
+            />
+          </Fragment>
+        )}
       </Card>
     </Fragment>
   );

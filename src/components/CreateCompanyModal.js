@@ -106,12 +106,13 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
       if (err) {
         setSnackBarData({ text: err.description, severity: "error" });
       } else {
+        console.log("new company created:", data);
         setSnackBarData({ text: "Empresa criada com sucesso", severity: "success" });
         await dispatch(addCompany(data));
+        setOpen(false);
       }
 
       setOpenSnackBar(true);
-      setOpen(false);
     } catch (error) {
       console.log(error);
       setSnackBarData({ text: error.message, severity: "error" });
@@ -141,7 +142,6 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
   }, []);
 
   useEffect(() => {
-    setCityOptions([]);
     const fetchCities = async () => {
       const { err, data } = await IbgeClient.getCitiesByState(state);
       if (err) return;
@@ -150,7 +150,9 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
       setCity(foundCity);
     };
 
+    setCityOptions([]);
     fetchCities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
   let time;
@@ -161,7 +163,7 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
     time = setTimeout(async () => {
       try {
         const {
-          data: { localidade, uf, logradouro },
+          data: { localidade, uf },
         } = await IbgeClient.getAddressByPostCode(e.target.value);
 
         setFoundCity(localidade);

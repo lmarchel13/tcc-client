@@ -8,11 +8,13 @@ import Register from "./Register";
 import Login from "./Login";
 import Logout from "./Logout";
 import Categories from "./Categories";
-import MyCompanies from "./MyCompanies";
+import Profile from "./Profile";
 import CompanyServices from "./CompanyServices";
 import Service from "./Service";
 import ServicesByCategory from "./ServicesByCategory";
 import Companies from "./Companies";
+import DayOffers from "./DayOffers";
+import Home from "./Home";
 
 import { API, Cache } from "../providers";
 import { setAuthedUser } from "../actions/authedUser";
@@ -44,12 +46,18 @@ const App = ({ dispatch }) => {
         <Route path="/signup" exact component={Register} />
         <Route path="/signin" exact component={Login} />
         <Route path="/signout" exact component={Logout} />
+        <Route path="/profile" exact component={Profile} />
+
         <Route path="/categories" exact component={Categories} />
-        <Route path="/my-companies" exact component={MyCompanies} />
+        <Route path="/categories/:categoryId" exact component={ServicesByCategory} />
+
         <Route path="/companies/:companyId/services" exact component={CompanyServices} />
         <Route path="/services/:serviceId" exact component={Service} />
-        <Route path="/categories/:categoryId" exact component={ServicesByCategory} />
+
+        <Route path="/offers" exact component={DayOffers} />
+
         <Route path="/companies" exact component={Companies} />
+        <Route path="/" exact component={Home} />
       </Fragment>
     </Router>
   );

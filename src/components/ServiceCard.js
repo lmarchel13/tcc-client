@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { Paper, Typography } from "@material-ui/core";
@@ -11,6 +11,8 @@ const TYPES = {
 
 const ServiceCard = ({ data }) => {
   const history = useHistory();
+  const [isHover, setIsHover] = useState(false);
+
   const {
     id,
     name,
@@ -35,10 +37,14 @@ const ServiceCard = ({ data }) => {
         maxWidth: 275,
         height: "300",
         padding: 32,
+        // eslint-disable-next-line no-dupe-keys
         margin: 32,
         flexDirection: "column",
+        border: isHover ? `0.6px solid ${blueColor}` : "0.6px solid transparent",
       }}
       onClick={handleClick}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
     >
       <Typography variant="h5" component="h2" style={{ textAlign: "center", color: blueColor, marginBottom: 16 }}>
         {name}

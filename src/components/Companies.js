@@ -1,5 +1,4 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useHistory } from "react-router-dom";
 
 import { Paper } from "@material-ui/core";
 
@@ -8,14 +7,11 @@ import SearchBar from "./SearchBar";
 import CompanyCard from "./CompanyCard";
 
 import { API } from "../providers";
-import { blueBg, blueColor } from "../utils/colors";
 
 const Companies = () => {
-  const history = useHistory();
-
   const [loading, setLoading] = useState(true);
   const [companies, setCompanies] = useState([]);
-  const [page, setPage] = useState(1);
+
   const [term, setTerm] = useState("");
 
   const [snackBarData, setSnackBarData] = useState({});
@@ -41,10 +37,10 @@ const Companies = () => {
     };
 
     const limit = 20;
-    const offset = (page - 1) * 20;
+    const offset = 0;
 
     fetchCompanies({ limit, offset });
-  }, [page]);
+  }, []);
 
   const search = async (e) => {
     e.preventDefault();
@@ -71,6 +67,7 @@ const Companies = () => {
               onClick={search}
               term={term}
               setTerm={setTerm}
+              focus={true}
             />
 
             <div style={{ width: "70%", margin: "0 auto", marginTop: 32, display: "flex", flex: 1, flexWrap: "wrap" }}>

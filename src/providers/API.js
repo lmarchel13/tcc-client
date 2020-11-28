@@ -10,6 +10,11 @@ const errorHandler = (err = {}) => {
 };
 
 const buildHeaders = ({ token }) => {
+  if (!token) {
+    console.error("Token not provided");
+    throw new Error("Token not provided");
+  }
+
   return {
     Authorization: `Bearer ${token}`,
   };
@@ -175,6 +180,39 @@ export const getCompanies = async ({ limit = 20, offset = 0, term = "" }) => {
 
   try {
     const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getDayOffers = async ({ limit = 20, offset = 0 }) => {
+  const endpoint = `/services/offers?limit=${limit}&offset=${offset}`;
+
+  try {
+    const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const whoAmI = async ({ jwt: token }) => {
+  const endpoint = "/users/me";
+
+  try {
+    const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const updateUser = async (payload, token) => {
+  const endpoint = "/users";
+
+  try {
+    const { data } = await instance.patch(endpoint, payload, { headers: buildHeaders({ token }) });
     return { data };
   } catch (error) {
     return errorHandler(error);

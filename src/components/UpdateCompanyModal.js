@@ -46,7 +46,7 @@ const WEEK_DAYS = [
   { value: 6, label: "D" },
 ];
 
-function UpdateCompanyModal({ open, setOpen, data, dispatch }) {
+const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
   const [name, setName] = useState(data.name);
   const [description, setDescription] = useState(data.description);
   const [email, setEmail] = useState(data.email);
@@ -60,7 +60,7 @@ function UpdateCompanyModal({ open, setOpen, data, dispatch }) {
   const [startTime, setStartTime] = useState(data.startTime);
   const [endTime, setEndTime] = useState(data.endTime);
   const [openDays, setOpenDays] = useState(data.openDays.map((i) => +i));
-  const [plan, setPlan] = useState(data.plan.id);
+  const [plan, setPlan] = useState(data.plan);
 
   const [cityOptions, setCityOptions] = useState([]);
   const [stateOptions, setStateOptions] = useState([]);
@@ -158,7 +158,7 @@ function UpdateCompanyModal({ open, setOpen, data, dispatch }) {
     };
 
     fetchCities();
-  }, [state]);
+  }, [previousState, state]);
 
   let time;
   const handlePostcodeChange = async (e) => {
@@ -446,7 +446,7 @@ function UpdateCompanyModal({ open, setOpen, data, dispatch }) {
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
     </div>
   );
-}
+};
 
 const mapStateToProps = ({ dispatch }, ownProps) => {
   return { ...ownProps, dispatch };

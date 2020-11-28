@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { useParams } from "react-router";
 
 import Modal from "@material-ui/core/Modal";
 import TextField from "@material-ui/core/TextField";
@@ -18,7 +17,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SnackBar from "./SnackBar";
 import TimePicker from "./TimePicker";
 
-import { API, Cache } from "../providers";
+import { API } from "../providers";
 
 import { makeStyles } from "@material-ui/core/styles";
 import { blueBg, blueColor } from "../utils/colors";
@@ -83,11 +82,11 @@ const CreateServiceModal = ({ open, setOpen, categories, authedUser, companyId }
       setSnackBarData({ text: err.description, severity: "error" });
     } else {
       setSnackBarData({ text: "Serviço criado com sucesso", severity: "success" });
+      setOpen(false);
+      resetDefaultState();
     }
 
     setOpenSnackBar(true);
-    setOpen(false);
-    resetDefaultState();
   };
 
   return (

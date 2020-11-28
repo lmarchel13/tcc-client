@@ -89,7 +89,7 @@ const Header = ({ loggedIn }) => {
         {loggedIn && (
           <div>
             <NavLink
-              to="/my-companies"
+              to="/profile"
               exact
               style={{
                 textDecoration: "none",
@@ -98,7 +98,7 @@ const Header = ({ loggedIn }) => {
                 fontFamily: "Futura",
               }}
             >
-              Anunciar
+              Perfil
             </NavLink>
             <NavLink
               to="/signout"

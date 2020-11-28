@@ -141,7 +141,7 @@ const Service = ({
 
     const payload = { companyId, time, value, day };
 
-    const { data, err } = await API.bookService(serviceId, payload, Cache.getToken());
+    const { err } = await API.bookService(serviceId, payload, Cache.getToken());
 
     if (err) {
       setSnackBarData({ text: err.description, severity: "error" });
@@ -196,6 +196,9 @@ const Service = ({
               <strong>Telefone:</strong> {service.company.phone}
             </Typography>
             <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
+              <strong>Email:</strong> {service.company.email}
+            </Typography>
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
               <strong>Duração:</strong> {service.duration}
             </Typography>
             <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
@@ -232,7 +235,14 @@ const Service = ({
           </Paper>
 
           <Button
-            style={{ backgroundColor: blueBg, color: blueColor, width: "10%", margin: "0 auto", marginTop: 32 }}
+            disabled={!day && !time}
+            style={{
+              backgroundColor: day && time ? blueBg : "lightgray",
+              color: day && time ? blueColor : "white",
+              width: "10%",
+              margin: "0 auto",
+              marginTop: 32,
+            }}
             onClick={bookService}
           >
             Agendar

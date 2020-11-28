@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import * as EmailValidator from "email-validator";
 import { useHistory } from "react-router-dom";
-import Paper from "@material-ui/core/Paper";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+
+import { Paper, TextField, Button } from "@material-ui/core";
+
 import SnackBar from "./SnackBar";
 
 import { blueBg, blueColor } from "../utils/colors";
@@ -36,7 +36,8 @@ const Register = () => {
     } else {
       setFormIsValid(false);
     }
-  }, [firstName, lastName, email, password, validateEmail, validatePassword]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [firstName, lastName, email, password]);
 
   const resetSnackBarState = () => {
     setOpenSnackBar(false);
