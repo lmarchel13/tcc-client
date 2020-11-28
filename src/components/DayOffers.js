@@ -5,9 +5,9 @@ import { flatten } from "lodash";
 import SnackBar from "./SnackBar";
 import ServicesByCategoryCard from "./ServicesByCategoryCard";
 import { API } from "../providers";
+import Title from "./Title";
 
-const DayOffers = ({ categories = [] }) => {
-  const [offers, setOffers] = useState([]);
+const DayOffers = ({ categories }) => {
   const [services, setServices] = useState([]);
 
   const [snackBarData, setSnackBarData] = useState({});
@@ -18,7 +18,7 @@ const DayOffers = ({ categories = [] }) => {
     setSnackBarData({});
   };
 
-  const buildOffers = () => {
+  const buildOffers = async (categories, offers) => {
     const categoriesObj = {};
     categories.forEach((category) => {
       categoriesObj[category.id] = category;
@@ -42,29 +42,32 @@ const DayOffers = ({ categories = [] }) => {
 
   useEffect(() => {
     const fetchDayOffers = async () => {
-      resetSnackBarState();
       const limit = 20;
       const offset = 0;
       const { data = [], err } = await API.getDayOffers({ limit, offset });
 
       if (err) {
+        resetSnackBarState();
         setSnackBarData({ text: err.description, severity: "error" });
         setOpenSnackBar(true);
       }
 
-      setOffers(data);
+      return data;
     };
 
-    fetchDayOffers().then(() => {
-      const data = buildOffers();
-      setServices(data);
+    if (!categories || !categories.length) return;
+
+    fetchDayOffers().then((dayOffers) => {
+      buildOffers(categories, dayOffers).then((data) => {
+        setServices(data);
+      });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [categories]);
 
   return (
     <Fragment>
-      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
+      <Title title="Ofertas do dia" />
       <div
         style={{
           width: "70%",
@@ -78,6 +81,7 @@ const DayOffers = ({ categories = [] }) => {
           return <ServicesByCategoryCard key={service.id} service={service} />;
         })}
       </div>
+      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
     </Fragment>
   );
 };

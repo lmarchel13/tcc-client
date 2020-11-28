@@ -46,8 +46,6 @@ const CompanyServices = ({ authedUser }) => {
     fetchServices(company.id);
   }, [company.id, openModal]);
 
-  console.log("services", services);
-
   return (
     <div>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />

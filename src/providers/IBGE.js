@@ -20,7 +20,6 @@ export const getStates = async () => {
       }),
     };
   } catch (error) {
-    console.log("error", error);
     return errorHandler(error);
   }
 };

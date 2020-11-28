@@ -34,8 +34,6 @@ const ServicesByCategoryCard = ({ service }) => {
     category,
   } = service;
 
-  console.log("category", category);
-
   const buildOpenDays = ({ openDays, startTime, endTime }) => {
     const days = openDays.map((day) => WEEK_DAYS[+day]).join(", ");
     return `${days} das ${startTime}h às ${endTime}h`;

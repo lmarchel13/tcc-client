@@ -102,7 +102,6 @@ const Service = ({
     if (!service) return [];
 
     const existentTimes = transactions.map((transaction) => transaction.time);
-    console.log("existentTimes", existentTimes);
 
     const { company } = service;
     const format = "HH:mm";

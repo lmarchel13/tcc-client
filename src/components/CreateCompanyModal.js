@@ -106,7 +106,6 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
       if (err) {
         setSnackBarData({ text: err.description, severity: "error" });
       } else {
-        console.log("new company created:", data);
         setSnackBarData({ text: "Empresa criada com sucesso", severity: "success" });
         await dispatch(addCompany(data));
         setOpen(false);
@@ -114,7 +113,6 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
 
       setOpenSnackBar(true);
     } catch (error) {
-      console.log(error);
       setSnackBarData({ text: error.message, severity: "error" });
       setOpenSnackBar(true);
     }

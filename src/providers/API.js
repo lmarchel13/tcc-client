@@ -11,7 +11,6 @@ const errorHandler = (err = {}) => {
 
 const buildHeaders = ({ token }) => {
   if (!token) {
-    console.error("Token not provided");
     throw new Error("Token not provided");
   }
 
@@ -134,16 +133,12 @@ export const getService = async (id) => {
     const { data } = await instance.get(endpoint);
     return { data };
   } catch (error) {
-    console.log("error", error);
     return errorHandler(error);
   }
 };
 
 export const bookService = async (serviceId, payload, token) => {
   const endpoint = `/services/${serviceId}/book`;
-
-  console.log("endpoint", endpoint);
-  console.log("payload", payload);
 
   try {
     const { data } = await instance.post(endpoint, payload, { headers: buildHeaders({ token }) });

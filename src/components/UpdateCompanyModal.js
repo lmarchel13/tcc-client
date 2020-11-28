@@ -118,7 +118,6 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
       setSnackBarData({ text: "Empresa atualizada com sucesso", severity: "success" });
       setOpenSnackBar(true);
     } catch (error) {
-      console.log(error);
       setSnackBarData({ text: error.message, severity: "error" });
       setOpenSnackBar(true);
     }
@@ -173,9 +172,7 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
 
         setState(uf);
         setCity(localidade);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }, 1500);
   };
 
@@ -289,7 +286,6 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
                 id="state-select"
                 value={state}
                 onChange={(e) => {
-                  console.log("state change", e.target.value);
                   setState(e.target.value);
                 }}
                 InputLabelProps={{ shrink: true }}

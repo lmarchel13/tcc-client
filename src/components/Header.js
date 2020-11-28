@@ -11,8 +11,7 @@ const Header = ({ loggedIn }) => {
     { to: "/categories", text: "Categorias" },
     { to: "/offers", text: "Ofertas do dia" },
     { to: "/transactions", text: "Histórico" },
-    { to: "/companies", text: "Lojas" },
-    { to: "/sell", text: "Vender" },
+    { to: "/companies", text: "Anunciantes" },
   ];
 
   return (

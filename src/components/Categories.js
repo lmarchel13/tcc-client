@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 
 import SnackBar from "./SnackBar";
 import { API } from "../providers";
 import CategoryCard from "./CategoryCard";
+import Title from "./Title";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
@@ -34,13 +35,16 @@ const Categories = () => {
   }, []);
 
   return (
-    <div style={{ display: "flex", flex: 1, flexWrap: "wrap", width: "75%", margin: "0 auto", marginTop: 64 }}>
-      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
-      {!!categories.length &&
-        categories.map((category) => {
-          return <CategoryCard key={category.id} data={category} />;
-        })}
-    </div>
+    <Fragment>
+      <Title title="Categorias" />
+      <div style={{ display: "flex", flex: 1, flexWrap: "wrap", width: "75%", margin: "0 auto", marginTop: 64 }}>
+        {!!categories.length &&
+          categories.map((category) => {
+            return <CategoryCard key={category.id} data={category} />;
+          })}
+        <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
+      </div>
+    </Fragment>
   );
 };
 
