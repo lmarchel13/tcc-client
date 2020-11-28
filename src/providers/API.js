@@ -133,3 +133,50 @@ export const getService = async (id) => {
     return errorHandler(error);
   }
 };
+
+export const bookService = async (serviceId, payload, token) => {
+  const endpoint = `/services/${serviceId}/book`;
+
+  console.log("endpoint", endpoint);
+  console.log("payload", payload);
+
+  try {
+    const { data } = await instance.post(endpoint, payload, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getTransactionsByDay = async (serviceId, day) => {
+  const endpoint = `/transactions?serviceId=${serviceId}&day=${day}`;
+
+  try {
+    const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getServicesByCategory = async (categoryId, { limit = 20, offset = 0 } = {}) => {
+  const endpoint = `/categories/${categoryId}/services?limit=${limit}&offset=${offset}`;
+
+  try {
+    const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getCompanies = async ({ limit = 20, offset = 0, term = "" }) => {
+  const endpoint = `/companies?limit=${limit}&offset=${offset}&term=${term}`;
+
+  try {
+    const { data } = await instance.get(endpoint);
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};

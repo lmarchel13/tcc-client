@@ -1,26 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, Fragment } from "react";
+import moment from "moment";
 
-import { Typography, Paper } from "@material-ui/core";
+import { Typography, Paper, Button, Select, MenuItem, InputLabel, FormControl } from "@material-ui/core";
 
 import SnackBar from "./SnackBar";
 
-import { API } from "../providers";
-import { blueColor } from "../utils/colors";
+import { API, Cache } from "../providers";
+import { blueColor, blueBg } from "../utils/colors";
 
 const TYPES = {
   fixed: "Valor fixo",
   "by-hour": "Por hora",
-};
-
-const WEEK_DAYS = {
-  0: "Segunda",
-  1: "Terça",
-  2: "Quarta",
-  3: "Quinta",
-  4: "Sexta",
-  5: "Sábado",
-  6: "Domingo",
 };
 
 const Service = ({
@@ -28,7 +18,10 @@ const Service = ({
     params: { serviceId },
   },
 }) => {
-  const [service, setService] = useState({ company: {} });
+  const [service, setService] = useState(null);
+  const [day, setDay] = useState("");
+  const [time, setTime] = useState("");
+  const [timeOptions, setTimeOptions] = useState([]);
 
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -56,9 +49,24 @@ const Service = ({
     fetchService();
   }, [serviceId]);
 
-  const buildOpenDays = (openDays = []) => {
-    return openDays.map((day) => WEEK_DAYS[day]).join(", ");
-  };
+  useEffect(() => {
+    const fetchTransactionsByDay = async (service, day) => {
+      if (!service || !day) return;
+
+      resetSnackBarState();
+      const { err, data } = await API.getTransactionsByDay(service.id, day);
+
+      if (err) {
+        setSnackBarData({ text: err.description, severity: "error" });
+        setOpenSnackBar(true);
+        return;
+      }
+
+      buildTimeOptions(service, data);
+    };
+
+    fetchTransactionsByDay(service, day);
+  }, [service, day]);
 
   const buildAddress = (data) => {
     const { address, city, state, postcode } = data;
@@ -70,52 +78,167 @@ const Service = ({
     window.open(url, "_blank");
   };
 
+  const buildDayOptions = (service) => {
+    if (!service || !service.company || !service.company.openDays || !service.company.openDays) {
+      return [];
+    }
+
+    const maxOptions = 20;
+    const format = "DD/MM/YYYY";
+    const days = [];
+    const date = moment(new Date(), format);
+
+    while (days.length !== maxOptions) {
+      if (service.company.openDays.includes(`${date.day()}`)) {
+        days.push(date.format(format));
+      }
+      date.add("1", "days");
+    }
+
+    return days;
+  };
+
+  const buildTimeOptions = (service, transactions = []) => {
+    if (!service) return [];
+
+    const existentTimes = transactions.map((transaction) => transaction.time);
+    console.log("existentTimes", existentTimes);
+
+    const { company } = service;
+    const format = "HH:mm";
+    const times = [];
+
+    const [hours, minutes] = service.duration.split(":");
+
+    const duration = +(hours * 60) + +minutes;
+    const startTime = moment(company.startTime, format);
+    const endTime = moment(company.endTime, format);
+
+    while (startTime <= endTime) {
+      const time = startTime.format(format);
+      if (!existentTimes.includes(time)) {
+        times.push(time);
+      }
+      startTime.add(duration, "minutes");
+    }
+
+    return setTimeOptions(times);
+  };
+
+  const bookService = async () => {
+    resetSnackBarState();
+    if (!day || !time) {
+      setSnackBarData({ text: "Selecione dia e horário", severity: "error" });
+      setOpenSnackBar(true);
+      return;
+    }
+
+    const {
+      id: serviceId,
+      company: { id: companyId },
+      value,
+    } = service;
+
+    const payload = { companyId, time, value, day };
+
+    const { data, err } = await API.bookService(serviceId, payload, Cache.getToken());
+
+    if (err) {
+      setSnackBarData({ text: err.description, severity: "error" });
+    } else {
+      setSnackBarData({ text: "Serviço agendado", severity: "success" });
+    }
+
+    resetSelects();
+    setOpenSnackBar(true);
+  };
+
+  const resetSelects = (time) => {
+    setDay("");
+    setTime("");
+    setTimeOptions(timeOptions.filter((t) => t !== time));
+  };
+
   return (
-    <div>
+    <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
 
-      <Paper
-        elevation={3}
-        style={{
-          margin: "0 auto",
-          display: "flex",
-          width: "30%",
-          height: "300",
-          marginTop: 64,
-          padding: 32,
-          flexDirection: "column",
-        }}
-      >
-        <Typography variant="h3" component="h2" style={{ textAlign: "center", color: blueColor, marginBottom: 16 }}>
-          {service.name}
-        </Typography>
-        <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
-          <i>{service.description}</i>
-        </Typography>
-        <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
-          <strong>Empresa:</strong> {service.company.name}
-        </Typography>
-        <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
-          <strong>Endereço: </strong>
-          <Link onClick={openMap} style={{ textDecoration: "none", color: "black" }}>
-            {buildAddress(service.company)}
-          </Link>
-        </Typography>
-        <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
-          <strong>Telefone:</strong> {service.company.phone}
-        </Typography>
-        <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
-          <strong>Duração:</strong> {service.duration}
-        </Typography>
-        <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
-          <strong>Valor:</strong>{" "}
-          {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(service.value)} (
-          {TYPES[service.type]})
-        </Typography>
-        <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
-          {buildOpenDays(service.company.openDays)} das {service.company.startTime} até {service.company.endTime}
-        </Typography>
-      </Paper>
+      {service && (
+        <Fragment>
+          <Paper
+            elevation={3}
+            style={{
+              margin: "0 auto",
+              display: "flex",
+              width: "30%",
+              height: "300",
+              marginTop: 64,
+              padding: 32,
+              flexDirection: "column",
+            }}
+          >
+            <Typography variant="h3" component="h2" style={{ textAlign: "center", color: blueColor, marginBottom: 16 }}>
+              {service.name}
+            </Typography>
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
+              <i>{service.description}</i>
+            </Typography>
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
+              <strong>Empresa:</strong> {service.company.name}
+            </Typography>
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
+              <strong>Endereço: </strong>
+              <span onClick={openMap} style={{ cursor: "pointer" }}>
+                {buildAddress(service.company)}
+              </span>
+            </Typography>
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
+              <strong>Telefone:</strong> {service.company.phone}
+            </Typography>
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
+              <strong>Duração:</strong> {service.duration}
+            </Typography>
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
+              <strong>Valor:</strong>{" "}
+              {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(service.value)} (
+              {TYPES[service.type]})
+            </Typography>
+            <div style={{ display: "flex", width: "60%", margin: "0 auto" }}>
+              <FormControl style={{ flex: 1, margin: 8 }}>
+                <InputLabel id="day-select">Dia</InputLabel>
+                <Select id="day-select" value={day} onChange={(e) => setDay(e.target.value)}>
+                  {buildDayOptions(service).map((opt) => {
+                    return (
+                      <MenuItem key={opt} value={opt}>
+                        {opt}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+              <FormControl style={{ flex: 1, margin: 8 }}>
+                <InputLabel id="time-select">Horario</InputLabel>
+                <Select id="time-select" value={time} onChange={(e) => setTime(e.target.value)}>
+                  {timeOptions.map((opt) => {
+                    return (
+                      <MenuItem key={opt} value={opt}>
+                        {opt}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </div>
+          </Paper>
+
+          <Button
+            style={{ backgroundColor: blueBg, color: blueColor, width: "10%", margin: "0 auto", marginTop: 32 }}
+            onClick={bookService}
+          >
+            Agendar
+          </Button>
+        </Fragment>
+      )}
     </div>
   );
 };

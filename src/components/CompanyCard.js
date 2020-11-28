@@ -17,7 +17,17 @@ import { API, Cache } from "../providers";
 import { removeCompany } from "../actions/company";
 import { blueColor } from "../utils/colors";
 
-const CompanyCard = ({ data, dispatch }) => {
+const WEEK_DAYS = {
+  0: "Segunda",
+  1: "Terça",
+  2: "Quarta",
+  3: "Quinta",
+  4: "Sexta",
+  5: "Sábado",
+  6: "Domingo",
+};
+
+const CompanyCard = ({ data, dispatch, editable = true }) => {
   const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
 
@@ -25,7 +35,7 @@ const CompanyCard = ({ data, dispatch }) => {
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
   if (!data) return;
-  const { id, name, documentType, document } = data;
+  const { id, name, documentType, document, description } = data;
 
   const buildAddress = (data) => {
     const { address, city, state, postcode } = data;
@@ -38,6 +48,12 @@ const CompanyCard = ({ data, dispatch }) => {
     } = data;
 
     return `${name}`;
+  };
+
+  const buildOpenDays = ({ openDays, startTime, endTime }) => {
+    const days = openDays.map((day) => WEEK_DAYS[+day]).join(", ");
+
+    return `${days} das ${startTime}h às ${endTime}h`;
   };
 
   const resetSnackBarState = () => {
@@ -56,7 +72,7 @@ const CompanyCard = ({ data, dispatch }) => {
 
     if (err) {
       setSnackBarData({ text: err.description, severity: "error" });
-      setOpenSnackBar(false);
+      setOpenSnackBar(true);
     } else {
       await dispatch(removeCompany(id));
     }
@@ -66,17 +82,21 @@ const CompanyCard = ({ data, dispatch }) => {
 
   return (
     <Fragment>
-      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
-      <UpdateCompanyModal setOpen={setOpenUpdateModal} open={openUpdateModal} data={data} />
-      <ConfirmModal
-        setOpen={setOpenConfirmModal}
-        open={openConfirmModal}
-        title="Remover empresa"
-        text="Deseja realmente remover essa empresa?"
-        onSubmit={() => {
-          deleteCompany();
-        }}
-      />
+      {editable && (
+        <Fragment>
+          <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
+          <UpdateCompanyModal setOpen={setOpenUpdateModal} open={openUpdateModal} data={data} />
+          <ConfirmModal
+            setOpen={setOpenConfirmModal}
+            open={openConfirmModal}
+            title="Remover empresa"
+            text="Deseja realmente remover essa empresa?"
+            onSubmit={() => {
+              deleteCompany();
+            }}
+          />
+        </Fragment>
+      )}
 
       <Card
         style={{
@@ -87,22 +107,36 @@ const CompanyCard = ({ data, dispatch }) => {
         variant="outlined"
       >
         <CardContent>
-          <DeleteIcon
-            style={{ float: "right", fontSize: 18, color: blueColor }}
-            onClick={() => setOpenConfirmModal(true)}
-          />
+          {editable && (
+            <DeleteIcon
+              style={{ float: "right", fontSize: 18, color: blueColor }}
+              onClick={() => setOpenConfirmModal(true)}
+            />
+          )}
           <Typography variant="h5" component="h2" style={{ textAlign: "center", color: blueColor, marginBottom: 16 }}>
             {name}
           </Typography>
-          <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
-            <strong>{documentType}:</strong> {document}
-          </Typography>
+          {editable ? (
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
+              <strong>{documentType}:</strong> {document}
+            </Typography>
+          ) : (
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
+              <i>{description}</i> {document}
+            </Typography>
+          )}
           <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
             <strong>Endereço:</strong> {buildAddress(data)}
           </Typography>
-          <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
-            <strong>Plano:</strong> {buildPlan(data)}
-          </Typography>
+          {editable ? (
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
+              <strong>Plano:</strong> {buildPlan(data)}
+            </Typography>
+          ) : (
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
+              <i>{buildOpenDays(data)}</i>
+            </Typography>
+          )}
         </CardContent>
         <CardActions style={{ float: "right" }}>
           <Button size="small">
@@ -110,12 +144,14 @@ const CompanyCard = ({ data, dispatch }) => {
               style={{ textDecoration: "none", color: blueColor }}
               to={{ pathname: `/companies/${id}/services`, state: { data } }}
             >
-              Serviços
+              {editable ? "Serviços" : "Visualizar Serviços"}
             </Link>
           </Button>
-          <Button onClick={editCompany} size="small" style={{ color: blueColor }}>
-            Editar
-          </Button>
+          {editable && (
+            <Button onClick={editCompany} size="small" style={{ color: blueColor }}>
+              Editar
+            </Button>
+          )}
         </CardActions>
       </Card>
     </Fragment>

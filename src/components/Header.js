@@ -32,7 +32,7 @@ const Header = ({ loggedIn }) => {
       </div>
       <div style={{ marginRight: 100, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
         <div>
-          <SearchBar />
+          <SearchBar placeholder="Buscar serviços..." />
         </div>
         <div style={{ display: "flex", justifyContent: "space-evenly", marginBottom: 15 }}>
           {links.map(({ to, text }) => {

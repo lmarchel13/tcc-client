@@ -29,16 +29,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function CustomizedInputBase() {
+const defineOnClickFn = () => {
+  console.log("onClick function não existe");
+};
+
+const SearchBar = ({ placeholder = "", onClick = defineOnClickFn, style = {}, term, setTerm }) => {
   const classes = useStyles();
 
   return (
-    <Paper component="form" className={classes.root} style={{ backgroundColor: "#F6F9FD" }}>
-      <InputBase className={classes.input} placeholder="Buscar serviços..." />
+    <Paper component="form" className={classes.root} style={{ backgroundColor: "#F6F9FD", ...style }}>
+      <InputBase
+        className={classes.input}
+        placeholder={placeholder}
+        value={term}
+        onChange={(e) => setTerm(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === "Enter") onClick(e);
+        }}
+      />
       <Divider className={classes.divider} orientation="vertical" />
-      <IconButton type="submit" className={classes.iconButton} aria-label="search">
+      <IconButton className={classes.iconButton} aria-label="search" onClick={onClick}>
         <SearchIcon />
       </IconButton>
     </Paper>
   );
-}
+};
+
+export default SearchBar;
