@@ -65,8 +65,6 @@ const App = ({ dispatch }) => {
 
         <Route path="/companies" exact component={Companies} />
 
-        <Route path="/chat" exact component={ChatWindow} />
-
         <Route path="/" exact component={Home} />
       </Fragment>
     </Router>
