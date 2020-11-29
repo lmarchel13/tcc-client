@@ -120,7 +120,7 @@ const Profile = ({ authedUser, dispatch, companies = [] }) => {
         </div>
       )}
       {!loading && companies.length > 0 ? (
-        <div style={{ marginTop: 32 }}>
+        <div style={{ marginTop: 64 }}>
           <h1 style={{ textAlign: "center", color: blueColor }}>Minhas empresas</h1>
           <div
             style={{
