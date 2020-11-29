@@ -7,7 +7,7 @@ import ServicesByCategoryCard from "./ServicesByCategoryCard";
 import { API } from "../providers";
 import Title from "./Title";
 
-const DayOffers = ({ categories }) => {
+const DayOffers = ({ categories, homeScreen = false }) => {
   const [services, setServices] = useState([]);
 
   const [snackBarData, setSnackBarData] = useState({});
@@ -42,7 +42,7 @@ const DayOffers = ({ categories }) => {
 
   useEffect(() => {
     const fetchDayOffers = async () => {
-      const limit = 20;
+      const limit = homeScreen ? 50 : 20;
       const offset = 0;
       const { data = [], err } = await API.getDayOffers({ limit, offset });
 
@@ -67,7 +67,7 @@ const DayOffers = ({ categories }) => {
 
   return (
     <Fragment>
-      <Title title="Ofertas do dia" />
+      {!homeScreen && <Title title="Ofertas do dia" />}
       <div
         style={{
           display: "flex",
@@ -77,7 +77,15 @@ const DayOffers = ({ categories }) => {
           marginTop: 64,
         }}
       >
-        <div style={{ width: "100%", display: "flex", margin: "0 auto", justifyContent: "center" }}>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            margin: "0 auto",
+            justifyContent: "center",
+            flexWrap: !homeScreen ? "wrap" : "nowrap",
+          }}
+        >
           {services.map((service) => {
             return <ServicesByCategoryCard key={service.id} service={service} />;
           })}

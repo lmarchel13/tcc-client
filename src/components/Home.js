@@ -1,47 +1,15 @@
-import React, { useState, useEffect, Fragment } from "react";
-import { Divider, Paper } from "@material-ui/core";
+import React, { Fragment } from "react";
+import { Paper } from "@material-ui/core";
+
+import "./styles/scrollbar.css";
 
 import DayOffers from "./DayOffers";
-import SnackBar from "./SnackBar";
 
-import { API } from "../providers";
 import { blueColor } from "../utils/colors";
 import Companies from "./Companies";
+import Title from "./Title";
 
 const Home = () => {
-  const [loading, setLoading] = useState(true);
-  const [dayOffers, setDayOffers] = useState([]);
-  const [companies, setCompanies] = useState([]);
-
-  const [snackBarData, setSnackBarData] = useState({});
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-
-  const resetSnackBarState = () => {
-    setOpenSnackBar(false);
-    setSnackBarData({});
-  };
-
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      const limit = 20;
-      const offset = 0;
-      const { data = [], err } = await API.getCompanies({ limit, offset });
-
-      if (err) {
-        resetSnackBarState();
-        setSnackBarData({ text: err.description, severity: "error" });
-        setOpenSnackBar(true);
-      }
-
-      return data;
-    };
-
-    fetchCompanies().then((data) => {
-      setCompanies(data);
-      setLoading(false);
-    });
-  }, []);
-
   return (
     <Fragment>
       <Paper
@@ -70,10 +38,32 @@ const Home = () => {
           <br></br> Cria sua conta, anuncie ou busque serviços de uma forma simplificada
         </span>
       </Paper>
-      <DayOffers />
-      <Companies searchBarEnabled={false} />
 
-      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
+      <Title title="Ofertas do dia" />
+      <div
+        className="scrollbar"
+        style={{
+          margin: "0 auto",
+          width: "100%",
+          overflowX: "auto",
+          display: "grid",
+        }}
+      >
+        <DayOffers homeScreen={true} />
+      </div>
+
+      <Title title="Empresas" />
+      <div
+        className="scrollbar"
+        style={{
+          margin: "0 auto",
+          width: "100%",
+          overflowX: "auto",
+          display: "grid",
+        }}
+      >
+        <Companies homeScreen={true} searchBarEnabled={false} />
+      </div>
     </Fragment>
   );
 };

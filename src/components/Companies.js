@@ -9,7 +9,7 @@ import CompanyCard from "./CompanyCard";
 import { API } from "../providers";
 import Title from "./Title";
 
-const Companies = ({ searchBarEnabled = true }) => {
+const Companies = ({ searchBarEnabled = true, homeScreen = false }) => {
   const [loading, setLoading] = useState(true);
   const [companies, setCompanies] = useState([]);
 
@@ -37,10 +37,11 @@ const Companies = ({ searchBarEnabled = true }) => {
       setLoading(false);
     };
 
-    const limit = 20;
+    const limit = homeScreen ? 50 : 20;
     const offset = 0;
 
     fetchCompanies({ limit, offset });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const search = async (e) => {
@@ -59,7 +60,7 @@ const Companies = ({ searchBarEnabled = true }) => {
 
   return (
     <Fragment>
-      <Title title="Empresas" />
+      {!homeScreen && <Title title="Empresas" />}
       {searchBarEnabled && (
         <SearchBar
           placeholder="Buscar empresas..."
@@ -77,7 +78,7 @@ const Companies = ({ searchBarEnabled = true }) => {
             marginTop: 64,
             display: "flex",
             flex: 1,
-            flexWrap: "wrap",
+            flexWrap: !homeScreen ? "wrap" : "nowrap",
             justifyContent: "center",
           }}
         >

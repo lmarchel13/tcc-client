@@ -131,7 +131,7 @@ const TransactionCard = ({ data, token, type } = {}) => {
             </Typography>
             {type !== "seller" && (
               <DeleteIcon
-                style={{ position: "absolute", bottom: -15, right: -25, color: blueColor }}
+                style={{ position: "absolute", bottom: 5, right: -25, color: blueColor }}
                 onClick={() => setOpenConfirmModal(true)}
               />
             )}

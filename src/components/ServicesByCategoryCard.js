@@ -61,26 +61,26 @@ const ServicesByCategoryCard = ({ service }) => {
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
-      <Typography variant="h5" component="h2" style={{ color: blueColor, marginBottom: 16 }}>
+      <Typography variant="h5" component="h2" style={{ color: blueColor, marginBottom: 16 }} noWrap={true}>
         {name}
       </Typography>
-      <Typography variant="body2" component="p" style={{ marginBottom: 16 }}>
+      <Typography variant="body2" component="p" style={{ marginBottom: 16 }} noWrap={true}>
         Oferecido por{" "}
         <Link to={`/companies/${companyId}`} style={{ textDecoration: "none", color: "black" }}>
           <i>{companyName}</i>
         </Link>
       </Typography>
-      <Typography variant="body2" component="p" style={{ marginBottom: 8 }}>
+      <Typography variant="body2" component="p" style={{ marginBottom: 8 }} noWrap={true}>
         <strong>Descrição:</strong> {description}
       </Typography>
-      <Typography variant="body2" component="p" style={{ marginBottom: 8 }}>
+      <Typography variant="body2" component="p" style={{ marginBottom: 8 }} noWrap={true}>
         <strong>Duração:</strong> {duration}h
       </Typography>
-      <Typography variant="body2" component="p" style={{ marginBottom: 8 }}>
+      <Typography variant="body2" component="p" style={{ marginBottom: 8 }} noWrap={true}>
         <strong>Valor:</strong> {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)}{" "}
         {TYPES[type]}
       </Typography>
-      <Typography variant="body2" component="p" style={{ marginBottom: 8 }}>
+      <Typography variant="body2" component="p" style={{ marginBottom: 8 }} noWrap={true}>
         {buildOpenDays({ openDays, startTime, endTime })}
       </Typography>
     </Paper>

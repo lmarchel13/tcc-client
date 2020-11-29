@@ -88,7 +88,8 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
           maxWidth: 500,
           margin: 16,
         }}
-        variant="outlined"
+        raised={true}
+        elevation={3}
       >
         <CardContent>
           {editable && (
@@ -101,24 +102,39 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
             {name}
           </Typography>
           {editable ? (
-            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8, textAlign: "center" }}>
               <strong>{documentType}:</strong> {document}
             </Typography>
           ) : (
-            <Typography variant="body2" component="p" style={{ marginBottom: 16, marginLeft: 8, textAlign: "center" }}>
-              <i>{description}</i> {document}
+            <Typography
+              variant="body2"
+              component="p"
+              style={{ marginBottom: 16, marginLeft: 8, textAlign: "center" }}
+              noWrap={true}
+            >
+              <i>{description}</i>
             </Typography>
           )}
-          <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
-            <strong>Endereço:</strong> {buildAddress(data)}
+          <Typography
+            variant="body2"
+            component="p"
+            style={{ marginBottom: 8, marginLeft: 8, textAlign: "center" }}
+            noWrap={true}
+          >
+            {buildAddress(data)}
           </Typography>
           {editable ? (
-            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
+            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8, textAlign: "center" }}>
               <strong>Plano:</strong> {buildPlan(data)}
             </Typography>
           ) : (
-            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
-              <i>{buildOpenDays(data)}</i>
+            <Typography
+              variant="body2"
+              component="p"
+              style={{ marginBottom: 8, marginLeft: 8, textAlign: "center" }}
+              noWrap={true}
+            >
+              {buildOpenDays(data)}
             </Typography>
           )}
         </CardContent>

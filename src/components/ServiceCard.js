@@ -33,12 +33,12 @@ const ServiceCard = ({ data }) => {
       style={{
         margin: "0 auto",
         display: "flex",
-        minWidth: 275,
-        maxWidth: 275,
+        minWidth: 375,
+        maxWidth: 375,
         height: "300",
         padding: 32,
         // eslint-disable-next-line no-dupe-keys
-        margin: 32,
+        margin: 16,
         flexDirection: "column",
         border: isHover ? `0.6px solid ${blueColor}` : "0.6px solid transparent",
       }}

@@ -176,7 +176,7 @@ const Service = ({
               flexDirection: "column",
             }}
           >
-            <Typography variant="h3" component="h2" style={{ textAlign: "center", color: blueColor, marginBottom: 16 }}>
+            <Typography variant="h4" component="h3" style={{ textAlign: "center", color: blueColor, marginBottom: 32 }}>
               {service.name}
             </Typography>
             <Typography variant="body2" component="p" style={{ marginBottom: 8, textAlign: "center" }}>
