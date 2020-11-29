@@ -130,6 +130,7 @@ const Profile = ({ authedUser, dispatch, companies = [] }) => {
               display: "flex",
               flexWrap: "wrap",
               flexDirection: "row",
+              justifyContent: "center",
             }}
           >
             {companies.map((company, index) => {

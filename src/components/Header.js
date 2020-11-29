@@ -29,7 +29,9 @@ const Header = ({ loggedIn }) => {
     setSnackBarData({});
   };
 
-  const search = async () => {
+  const search = async (e) => {
+    e.preventDefault();
+
     if (!term) return;
 
     const { data, err } = await API.searchServices(term);
@@ -48,6 +50,8 @@ const Header = ({ loggedIn }) => {
       return;
     }
 
+    setTerm("");
+
     history.push("/services", { services: data });
   };
 
@@ -65,7 +69,16 @@ const Header = ({ loggedIn }) => {
         }}
       >
         <div style={{ alignSelf: "flex-end", marginRight: 100 }}>
-          <img src={logo} alt="Logo" height="100" width="300" />
+          <img
+            src={logo}
+            alt="Logo"
+            height="100"
+            width="300"
+            onClick={() => {
+              history.push("/");
+            }}
+            style={{ cursor: "pointer" }}
+          />
         </div>
         <div style={{ marginRight: 100, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
           <div>

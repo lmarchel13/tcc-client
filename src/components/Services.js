@@ -24,6 +24,7 @@ const Services = () => {
           flexWrap: "wrap",
           margin: "0 auto",
           marginTop: 64,
+          justifyContent: "center",
         }}
       >
         {services.length ? (

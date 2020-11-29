@@ -9,7 +9,7 @@ import CompanyCard from "./CompanyCard";
 import { API } from "../providers";
 import Title from "./Title";
 
-const Companies = () => {
+const Companies = ({ searchBarEnabled = true }) => {
   const [loading, setLoading] = useState(true);
   const [companies, setCompanies] = useState([]);
 
@@ -54,18 +54,21 @@ const Companies = () => {
     }
 
     setCompanies(data);
+    setTerm("");
   };
 
   return (
     <Fragment>
       <Title title="Empresas" />
-      <SearchBar
-        placeholder="Buscar empresas..."
-        style={{ margin: "0 auto", marginTop: 64 }}
-        onClick={search}
-        term={term}
-        setTerm={setTerm}
-      />
+      {searchBarEnabled && (
+        <SearchBar
+          placeholder="Buscar empresas..."
+          style={{ margin: "0 auto", marginTop: 64 }}
+          onClick={search}
+          term={term}
+          setTerm={setTerm}
+        />
+      )}
       {!loading && companies.length > 0 ? (
         <div
           style={{
