@@ -59,22 +59,28 @@ const Companies = () => {
   return (
     <Fragment>
       <Title title="Empresas" />
+      <SearchBar
+        placeholder="Buscar empresas..."
+        style={{ margin: "0 auto", marginTop: 64 }}
+        onClick={search}
+        term={term}
+        setTerm={setTerm}
+      />
       {!loading && companies.length > 0 ? (
-        <div style={{ width: "70%", margin: "0 auto", marginTop: 64 }}>
-          <SearchBar
-            placeholder="Buscar empresas..."
-            style={{ margin: "0 auto" }}
-            onClick={search}
-            term={term}
-            setTerm={setTerm}
-            focus={true}
-          />
-
-          <div style={{ width: "70%", margin: "0 auto", marginTop: 64, display: "flex", flex: 1, flexWrap: "wrap" }}>
-            {companies.map((company, index) => {
-              return <CompanyCard data={company} key={index} editable={false} />;
-            })}
-          </div>
+        <div
+          style={{
+            width: "70%",
+            margin: "0 auto",
+            marginTop: 64,
+            display: "flex",
+            flex: 1,
+            flexWrap: "wrap",
+            justifyContent: "center",
+          }}
+        >
+          {companies.map((company, index) => {
+            return <CompanyCard data={company} key={index} editable={false} />;
+          })}
         </div>
       ) : (
         <Paper

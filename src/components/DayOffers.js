@@ -70,16 +70,18 @@ const DayOffers = ({ categories }) => {
       <Title title="Ofertas do dia" />
       <div
         style={{
-          width: "70%",
           display: "flex",
-          flexWrap: "wrap",
+          flex: 1,
+          width: "70%",
           margin: "0 auto",
           marginTop: 64,
         }}
       >
-        {services.map((service) => {
-          return <ServicesByCategoryCard key={service.id} service={service} />;
-        })}
+        <div style={{ width: "100%", display: "flex", margin: "0 auto", justifyContent: "center" }}>
+          {services.map((service) => {
+            return <ServicesByCategoryCard key={service.id} service={service} />;
+          })}
+        </div>
       </div>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
     </Fragment>

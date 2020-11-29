@@ -16,6 +16,7 @@ import Companies from "./Companies";
 import DayOffers from "./DayOffers";
 import Home from "./Home";
 import Services from "./Services";
+import Transactions from "./Transactions";
 
 import { API, Cache } from "../providers";
 import { setAuthedUser } from "../actions/authedUser";
@@ -54,6 +55,8 @@ const App = ({ dispatch }) => {
 
         <Route path="/companies/:companyId/services" exact component={CompanyServices} />
         <Route path="/services/:serviceId" exact component={Service} />
+
+        <Route path="/transactions" exact component={Transactions} />
 
         <Route path="/offers" exact component={DayOffers} />
         <Route path="/services" exact component={Services} />

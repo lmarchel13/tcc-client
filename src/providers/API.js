@@ -224,3 +224,32 @@ export const searchServices = async (term) => {
     return errorHandler(error);
   }
 };
+
+export const getUserTransactions = async (token) => {
+  let buyer, seller;
+
+  try {
+    const { data } = await instance.get("/transactions/buyer", { headers: buildHeaders({ token }) });
+    buyer = data;
+  } catch (error) {
+    return errorHandler(error);
+  }
+
+  try {
+    const { data } = await instance.get("/transactions/seller", { headers: buildHeaders({ token }) });
+    seller = data;
+  } catch (error) {
+    return errorHandler(error);
+  }
+
+  return { data: { buyer, seller } };
+};
+
+export const deleteTransaction = async (id, token) => {
+  try {
+    const { data } = await instance.delete(`/transactions/${id}`, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};

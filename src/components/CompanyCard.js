@@ -105,7 +105,7 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
               <strong>{documentType}:</strong> {document}
             </Typography>
           ) : (
-            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8 }}>
+            <Typography variant="body2" component="p" style={{ marginBottom: 16, marginLeft: 8, textAlign: "center" }}>
               <i>{description}</i> {document}
             </Typography>
           )}
