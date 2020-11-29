@@ -79,7 +79,7 @@ const Profile = ({ authedUser, dispatch, companies = [] }) => {
     <Fragment>
       {user && (
         <div style={{ marginTop: 32 }}>
-          <h1 style={{ textAlign: "center", color: blueColor }}>Seus dados</h1>
+          <h1 style={{ textAlign: "center", color: blueColor }}>Meus dados</h1>
           <Paper style={{ width: 600, height: 300, margin: "0 auto", marginTop: 64 }}>
             <Table>
               <TableBody>
@@ -121,7 +121,7 @@ const Profile = ({ authedUser, dispatch, companies = [] }) => {
       )}
       {!loading && companies.length > 0 ? (
         <div style={{ marginTop: 32 }}>
-          <h1 style={{ textAlign: "center", color: blueColor }}>Suas empresas</h1>
+          <h1 style={{ textAlign: "center", color: blueColor }}>Minhas empresas</h1>
           <div
             style={{
               width: "70%",
