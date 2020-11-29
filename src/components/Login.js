@@ -35,10 +35,13 @@ const Login = ({ dispatch }) => {
       setSnackBarData({ text: err.description, severity: "error" });
       setOpenSnackBar(true);
     } else {
-      const { userId, jwt } = data;
+      const { userId, jwt, userCompanies } = data;
 
-      dispatch(setAuthedUser({ userId, jwt }));
       Cache.setToken(jwt);
+      Cache.setUserId(userId);
+      Cache.setUserCompanies(userCompanies);
+
+      dispatch(setAuthedUser({ userId, jwt, userCompanies }));
 
       history.push("/");
     }
@@ -48,7 +51,7 @@ const Login = ({ dispatch }) => {
     <div style={{ width: "30%", margin: "0 auto", height: 500, marginTop: 64 }}>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
       <form noValidate autoComplete="off" onSubmit={onSubmit}>
-        <Paper style={{ height: 300 }}>
+        <Paper style={{ width: 800, height: 350, margin: "0 auto" }}>
           <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>
             Olá! Digite o seu e-mail e senha
           </h2>
@@ -73,7 +76,7 @@ const Login = ({ dispatch }) => {
             />
           </div>
         </Paper>
-        <div style={{ width: "80%", margin: "0 auto" }}>
+        <div style={{ width: "40%", margin: "0 auto" }}>
           <Button
             variant="contained"
             size="large"

@@ -11,7 +11,7 @@ import SnackBar from "./SnackBar";
 import CreateServiceModal from "./CreateServiceModal";
 import ServiceCard from "./ServiceCard";
 
-import { API } from "../providers";
+import { API, Cache } from "../providers";
 import { blueBg, blueColor } from "../utils/colors";
 
 const CompanyServices = ({ authedUser }) => {
@@ -28,6 +28,15 @@ const CompanyServices = ({ authedUser }) => {
   const resetSnackBarState = () => {
     setOpenSnackBar(false);
     setSnackBarData({});
+  };
+
+  const isUserCompany = (id) => {
+    const companies = Cache.getUserCompanies();
+    if (companies.length === 0) return false;
+
+    const foundCompany = companies.find((company) => company.id === id);
+
+    return foundCompany ? true : false;
   };
 
   useEffect(() => {
@@ -88,7 +97,7 @@ const CompanyServices = ({ authedUser }) => {
           })}
         </div>
       )}
-      {authedUser && authedUser.jwt && authedUser.userId && (
+      {authedUser && authedUser.jwt && authedUser.userId && isUserCompany(company.id) && (
         <div
           style={{
             position: "fixed",

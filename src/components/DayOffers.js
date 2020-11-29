@@ -2,6 +2,8 @@ import React, { Fragment, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { flatten } from "lodash";
 
+import "./styles/futura.css";
+
 import SnackBar from "./SnackBar";
 import ServicesByCategoryCard from "./ServicesByCategoryCard";
 import { API } from "../providers";

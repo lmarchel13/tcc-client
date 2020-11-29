@@ -103,11 +103,15 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
 
     try {
       const { err, data } = await API.createCompany(payload, token);
+
       if (err) {
         setSnackBarData({ text: err.description, severity: "error" });
       } else {
         setSnackBarData({ text: "Empresa criada com sucesso", severity: "success" });
-        await dispatch(addCompany(data));
+
+        dispatch(addCompany(data));
+        Cache.updateUserCompanies(data);
+
         setOpen(false);
       }
 

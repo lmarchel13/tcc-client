@@ -2,8 +2,7 @@ import React, { useState, Fragment } from "react";
 import { useHistory } from "react-router-dom";
 import moment from "moment";
 
-import { Divider, Paper, Typography } from "@material-ui/core";
-import DeleteIcon from "@material-ui/icons/Delete";
+import { Button, Divider, Paper, Typography } from "@material-ui/core";
 
 import ConfirmModal from "./ConfirmModal";
 import SnackBar from "./SnackBar";
@@ -52,14 +51,19 @@ const TransactionCard = ({ data, token, type } = {}) => {
 
     const { err } = await API.deleteTransaction(id, token);
 
+    resetSnackBarState();
     if (err) {
-      resetSnackBarState();
       setSnackBarData({
         text: err.description,
         severity: "error",
       });
-      setOpenSnackBar(true);
+    } else {
+      setSnackBarData({
+        text: "Agendamento cancelado com sucesso",
+        severity: "error",
+      });
     }
+    setOpenSnackBar(true);
   };
 
   return (
@@ -84,6 +88,7 @@ const TransactionCard = ({ data, token, type } = {}) => {
                 textAlign: "center",
                 cursor: type !== "seller" ? "pointer" : "auto",
                 color: blueColor,
+                fontFamily: "Futura",
               }}
               onClick={() => {
                 if (type !== "seller") return;
@@ -97,14 +102,14 @@ const TransactionCard = ({ data, token, type } = {}) => {
             <Typography
               variant="body2"
               component="p"
-              style={{ marginBottom: 16, textAlign: "center", color: blueColor }}
+              style={{ marginBottom: 16, textAlign: "center", color: blueColor, fontFamily: "Futura" }}
             >
               <i>Serviço: {serviceName}</i>
             </Typography>
             <Typography
               variant="body2"
               component="p"
-              style={{ marginBottom: 16, textAlign: "center", color: blueColor }}
+              style={{ marginBottom: 16, textAlign: "center", color: blueColor, fontFamily: "Futura" }}
             >
               <i>
                 Data: {day} às {time}
@@ -125,15 +130,31 @@ const TransactionCard = ({ data, token, type } = {}) => {
             <Typography
               variant="body2"
               component="p"
-              style={{ marginBottom: 16, textAlign: "center", alignSelf: "center", fontSize: 24, color: blueColor }}
+              style={{
+                marginBottom: 16,
+                textAlign: "center",
+                alignSelf: "center",
+                fontSize: 24,
+                color: blueColor,
+                fontFamily: "Futura",
+              }}
             >
               {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)}
             </Typography>
             {type !== "seller" && (
-              <DeleteIcon
-                style={{ position: "absolute", bottom: 5, right: -25, color: blueColor }}
+              <Button
+                style={{
+                  position: "absolute",
+                  bottom: 5,
+                  right: -25,
+                  color: blueColor,
+                  fontFamily: "Futura",
+                  fontSize: 10,
+                }}
                 onClick={() => setOpenConfirmModal(true)}
-              />
+              >
+                Cancelar
+              </Button>
             )}
           </div>
         </div>

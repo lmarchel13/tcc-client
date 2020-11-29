@@ -2,6 +2,8 @@ import React, { Fragment, useState } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
+import "./styles/futura.css";
+
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
@@ -74,7 +76,8 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
       setSnackBarData({ text: err.description, severity: "error" });
       setOpenSnackBar(true);
     } else {
-      await dispatch(removeCompany(id));
+      dispatch(removeCompany(id));
+      Cache.removeUserCompany(id);
     }
 
     return setOpenUpdateModal(false);
@@ -98,18 +101,26 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
               onClick={() => setOpenConfirmModal(true)}
             />
           )}
-          <Typography variant="h5" component="h2" style={{ textAlign: "center", color: blueColor, marginBottom: 16 }}>
+          <Typography
+            variant="h5"
+            component="h2"
+            style={{ textAlign: "center", color: blueColor, marginBottom: 16, fontFamily: "Futura" }}
+          >
             {name}
           </Typography>
           {editable ? (
-            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8, textAlign: "center" }}>
+            <Typography
+              variant="body2"
+              component="p"
+              style={{ marginBottom: 8, marginLeft: 8, textAlign: "center", fontFamily: "Futura" }}
+            >
               <strong>{documentType}:</strong> {document}
             </Typography>
           ) : (
             <Typography
               variant="body2"
               component="p"
-              style={{ marginBottom: 16, marginLeft: 8, textAlign: "center" }}
+              style={{ marginBottom: 16, marginLeft: 8, textAlign: "center", fontFamily: "Futura" }}
               noWrap={true}
             >
               <i>{description}</i>
@@ -118,20 +129,24 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
           <Typography
             variant="body2"
             component="p"
-            style={{ marginBottom: 8, marginLeft: 8, textAlign: "center" }}
+            style={{ marginBottom: 8, marginLeft: 8, textAlign: "center", fontFamily: "Futura" }}
             noWrap={true}
           >
             {buildAddress(data)}
           </Typography>
           {editable ? (
-            <Typography variant="body2" component="p" style={{ marginBottom: 8, marginLeft: 8, textAlign: "center" }}>
+            <Typography
+              variant="body2"
+              component="p"
+              style={{ marginBottom: 8, marginLeft: 8, textAlign: "center", fontFamily: "Futura" }}
+            >
               <strong>Plano:</strong> {buildPlan(data)}
             </Typography>
           ) : (
             <Typography
               variant="body2"
               component="p"
-              style={{ marginBottom: 8, marginLeft: 8, textAlign: "center" }}
+              style={{ marginBottom: 8, marginLeft: 8, textAlign: "center", fontFamily: "Futura" }}
               noWrap={true}
             >
               {buildOpenDays(data)}
@@ -141,14 +156,14 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
         <CardActions style={{ float: "right" }}>
           <Button size="small">
             <Link
-              style={{ textDecoration: "none", color: blueColor }}
+              style={{ textDecoration: "none", color: blueColor, fontFamily: "Futura" }}
               to={{ pathname: `/companies/${id}/services`, state: { data } }}
             >
               {editable ? "Serviços" : "Visualizar Serviços"}
             </Link>
           </Button>
           {editable && (
-            <Button onClick={editCompany} size="small" style={{ color: blueColor }}>
+            <Button onClick={editCompany} size="small" style={{ color: blueColor, fontFamily: "Futura" }}>
               Editar
             </Button>
           )}

@@ -12,8 +12,8 @@ import { API } from "../providers";
 const links = [
   { to: "/categories", text: "Categorias" },
   { to: "/offers", text: "Ofertas do dia" },
-  { to: "/transactions", text: "Histórico" },
   { to: "/companies", text: "Anunciantes" },
+  { to: "/transactions", text: "Histórico" },
 ];
 
 const Header = ({ loggedIn }) => {

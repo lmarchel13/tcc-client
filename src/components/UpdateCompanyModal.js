@@ -112,7 +112,10 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
         return;
       }
 
-      await dispatch(updateCompany(data));
+      dispatch(updateCompany(data));
+
+      Cache.updateUserCompanies(data);
+
       setOpen(false);
 
       setSnackBarData({ text: "Empresa atualizada com sucesso", severity: "success" });

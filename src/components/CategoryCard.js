@@ -76,7 +76,7 @@ const CategoryCard = ({ data: { id, name, icon } } = {}) => {
         />
       </div>
       <div style={{ display: "flex", flex: 1, margin: "0 auto" }}>
-        <span style={{ fontSize: 24, marginTop: 12 }}>{name}</span>
+        <span style={{ fontSize: 24, marginTop: 12, color: blueColor }}>{name}</span>
       </div>
     </div>
   );

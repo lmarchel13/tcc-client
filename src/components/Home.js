@@ -35,7 +35,7 @@ const Home = () => {
           }}
         >
           Seja bem-vindo ao <strong>Servicify</strong>!<br></br>
-          <br></br> Cria sua conta, anuncie ou busque serviços de uma forma simplificada
+          <br></br>Sua plataforma de anúncio e busca de serviços.
         </span>
       </Paper>
 

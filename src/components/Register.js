@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 import * as EmailValidator from "email-validator";
 import { useHistory } from "react-router-dom";
@@ -61,71 +61,72 @@ const Register = () => {
   };
 
   return (
-    <div style={{ width: "30%", margin: "0 auto", height: 500, marginTop: 64 }}>
-      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
-
-      <form noValidate autoComplete="off" onSubmit={onSubmit}>
-        <Paper style={{ width: 800, height: 350 }}>
-          <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>
-            Preencha seus dados
-          </h2>
-          <div style={{ width: "90%", margin: "0 auto", padding: 32 }}>
-            <div style={{ display: "flex", marginBottom: 32 }}>
-              <TextField
-                name="firstName"
-                label="Nome"
-                style={{ flex: 1, margin: 16 }}
-                onChange={(e) => {
-                  setFirstName(e.target.value);
-                }}
-              />
-              <TextField
-                name="lastName"
-                label="Sobrenome"
-                style={{ flex: 1, margin: 16 }}
-                onChange={(e) => {
-                  setLastName(e.target.value);
-                }}
-              />
+    <Fragment>
+      <div style={{ width: "30%", margin: "0 auto", height: 500, marginTop: 64 }}>
+        <form noValidate autoComplete="off" onSubmit={onSubmit}>
+          <Paper style={{ width: 800, height: 350, margin: "0 auto" }}>
+            <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>
+              Preencha seus dados
+            </h2>
+            <div style={{ width: "90%", margin: "0 auto", padding: 32 }}>
+              <div style={{ display: "flex", marginBottom: 32 }}>
+                <TextField
+                  name="firstName"
+                  label="Nome"
+                  style={{ flex: 1, margin: 16 }}
+                  onChange={(e) => {
+                    setFirstName(e.target.value);
+                  }}
+                />
+                <TextField
+                  name="lastName"
+                  label="Sobrenome"
+                  style={{ flex: 1, margin: 16 }}
+                  onChange={(e) => {
+                    setLastName(e.target.value);
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", marginTop: 32 }}>
+                <TextField
+                  error={!!email && !validateEmail()}
+                  helperText={email && !validateEmail() && "E-mail inválido"}
+                  name="email"
+                  label="E-mail"
+                  type="email"
+                  style={{ flex: 1, margin: 16 }}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                />
+                <TextField
+                  error={!!password && !validatePassword()}
+                  helperText={password && !validatePassword() && "Use de 6 a 20 caracteres"}
+                  name="password"
+                  label="Senha"
+                  type="password"
+                  style={{ flex: 1, margin: 16 }}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                />
+              </div>
             </div>
-            <div style={{ display: "flex", marginTop: 32 }}>
-              <TextField
-                error={!!email && !validateEmail()}
-                helperText={email && !validateEmail() && "E-mail inválido"}
-                name="email"
-                label="E-mail"
-                type="email"
-                style={{ flex: 1, margin: 16 }}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-              <TextField
-                error={!!password && !validatePassword()}
-                helperText={password && !validatePassword() && "Use de 6 a 20 caracteres"}
-                name="password"
-                label="Senha"
-                type="password"
-                style={{ flex: 1, margin: 16 }}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-            </div>
+          </Paper>
+          <div style={{ width: "40%", margin: "0 auto" }}>
+            <Button
+              variant="contained"
+              size="large"
+              style={{ marginTop: 32, backgroundColor: blueBg, width: "100%", color: blueColor }}
+              type="submit"
+            >
+              Enviar
+            </Button>
           </div>
-        </Paper>
-        <div style={{ width: "80%", margin: "0 auto" }}>
-          <Button
-            variant="contained"
-            size="large"
-            style={{ marginTop: 32, backgroundColor: blueBg, width: "100%", color: blueColor }}
-            type="submit"
-          >
-            Enviar
-          </Button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
+    </Fragment>
   );
 };
 

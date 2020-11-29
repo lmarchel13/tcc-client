@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import LoadingBar from "react-redux-loading-bar";
 
+import "./styles/futura.css";
+
 import Header from "./Header";
 import Register from "./Register";
 import Login from "./Login";
@@ -62,6 +64,9 @@ const App = ({ dispatch }) => {
         <Route path="/services" exact component={Services} />
 
         <Route path="/companies" exact component={Companies} />
+
+        <Route path="/chat" exact component={ChatWindow} />
+
         <Route path="/" exact component={Home} />
       </Fragment>
     </Router>
