@@ -2,8 +2,9 @@ import React, { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 import * as EmailValidator from "email-validator";
 import { useHistory } from "react-router-dom";
+import { GoogleLogin } from "react-google-login";
 
-import { Paper, TextField, Button } from "@material-ui/core";
+import { Paper, TextField, Button, Divider } from "@material-ui/core";
 
 import SnackBar from "./SnackBar";
 
@@ -56,15 +57,46 @@ const Register = () => {
       setSnackBarData({ text: err.description, severity: "error" });
       setOpenSnackBar(true);
     } else {
-      history.push("/login");
+      history.push("/signin");
     }
+  };
+
+  const onSuccess = async (response) => {
+    const {
+      profileObj: { email, familyName: lastName, givenName: firstName, googleId },
+    } = response;
+
+    const payload = {
+      firstName,
+      lastName,
+      email,
+      googleId,
+    };
+
+    const { err } = await API.register(payload);
+
+    if (err) {
+      setSnackBarData({ text: err.description, severity: "error" });
+      setOpenSnackBar(true);
+    } else {
+      history.push("/signin");
+    }
+  };
+
+  const onFailure = (e) => {
+    console.log("Error:", e);
+    setSnackBarData({
+      text: "Não foi possível logar com seu email do Google. Por favor, tente novamente",
+      severity: "error",
+    });
+    setOpenSnackBar(true);
   };
 
   return (
     <Fragment>
-      <div style={{ width: "30%", margin: "0 auto", height: 500, marginTop: 64 }}>
+      <div style={{ width: "100%", margin: "0 auto", height: 500, marginTop: 64 }}>
         <form noValidate autoComplete="off" onSubmit={onSubmit}>
-          <Paper style={{ width: 800, height: 350, margin: "0 auto" }}>
+          <Paper style={{ width: 800, height: 600, margin: "0 auto" }}>
             <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>
               Preencha seus dados
             </h2>
@@ -111,18 +143,41 @@ const Register = () => {
                   }}
                 />
               </div>
+              <div style={{ width: "40%", margin: "0 auto" }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  style={{ marginTop: 32, backgroundColor: blueBg, width: "100%", color: blueColor }}
+                  type="submit"
+                >
+                  Enviar
+                </Button>
+              </div>
+            </div>
+            <Divider orientation="horizontal" style={{ width: "80%", margin: "0 auto" }} />
+            <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>Ou</h2>
+            <div
+              style={{
+                width: "90%",
+                margin: "0 auto",
+                padding: 32,
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div style={{ display: "flex", marginBottom: 32, margin: "0 auto" }}>
+                <GoogleLogin
+                  clientId="527214406910-5rkm3vv611cftn5o8969539m3dreg6t6.apps.googleusercontent.com"
+                  buttonText="Registre-se com o Google"
+                  onSuccess={onSuccess}
+                  onFailure={onFailure}
+                  cookiePolicy={"single_host_origin"}
+                  // isSignedIn={true}
+                />
+              </div>
             </div>
           </Paper>
-          <div style={{ width: "40%", margin: "0 auto" }}>
-            <Button
-              variant="contained"
-              size="large"
-              style={{ marginTop: 32, backgroundColor: blueBg, width: "100%", color: blueColor }}
-              type="submit"
-            >
-              Enviar
-            </Button>
-          </div>
         </form>
       </div>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />

@@ -163,136 +163,138 @@ const Service = ({
   };
 
   return (
-    <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
-      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
-
-      {service && (
-        <Fragment>
-          <Paper
-            elevation={3}
-            style={{
-              margin: "0 auto",
-              display: "flex",
-              width: "30%",
-              height: "300",
-              marginTop: 64,
-              padding: 32,
-              flexDirection: "column",
-            }}
-          >
-            <Typography
-              variant="h4"
-              component="h3"
-              style={{ textAlign: "center", color: blueColor, marginBottom: 32, fontFamily: "Futura" }}
-            >
-              {service.name}
-            </Typography>
-            <Typography
-              variant="body2"
-              component="p"
-              style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
-            >
-              <i>{service.description}</i>
-            </Typography>
-            <Typography
-              variant="body2"
-              component="p"
-              style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
-            >
-              <strong>Empresa:</strong> {service.company.name}
-            </Typography>
-            <Typography
-              variant="body2"
-              component="p"
-              style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
-            >
-              <strong>Endereço: </strong>
-              <span onClick={openMap} style={{ cursor: "pointer" }}>
-                {buildAddress(service.company)}
-              </span>
-            </Typography>
-            <Typography
-              variant="body2"
-              component="p"
-              style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
-            >
-              <strong>Telefone:</strong> {service.company.phone}
-            </Typography>
-            <Typography
-              variant="body2"
-              component="p"
-              style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
-            >
-              <strong>Email:</strong> {service.company.email}
-            </Typography>
-            <Typography
-              variant="body2"
-              component="p"
-              style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
-            >
-              <strong>Duração:</strong> {service.duration}
-            </Typography>
-            <Typography
-              variant="body2"
-              component="p"
-              style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
-            >
-              <strong>Valor:</strong>{" "}
-              {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(service.value)} (
-              {TYPES[service.type]})
-            </Typography>
-            {authedUser && authedUser.jwt && authedUser.userId && (
-              <div style={{ display: "flex", width: "60%", margin: "0 auto" }}>
-                <FormControl style={{ flex: 1, margin: 8 }}>
-                  <InputLabel id="day-select" style={{ fontFamily: "Futura" }}>
-                    Dia
-                  </InputLabel>
-                  <Select id="day-select" value={day} onChange={(e) => setDay(e.target.value)}>
-                    {buildDayOptions(service).map((opt) => {
-                      return (
-                        <MenuItem key={opt} value={opt} style={{ fontFamily: "Futura" }}>
-                          {opt}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
-                <FormControl style={{ flex: 1, margin: 8 }}>
-                  <InputLabel id="time-select" style={{ fontFamily: "Futura" }}>
-                    Horario
-                  </InputLabel>
-                  <Select id="time-select" value={time} onChange={(e) => setTime(e.target.value)} disabled={!day}>
-                    {timeOptions.map((opt) => {
-                      return (
-                        <MenuItem key={opt} value={opt} style={{ fontFamily: "Futura" }}>
-                          {opt}
-                        </MenuItem>
-                      );
-                    })}
-                  </Select>
-                </FormControl>
-              </div>
-            )}
-          </Paper>
-
-          {authedUser && authedUser.jwt && authedUser.userId && (
-            <Button
-              disabled={!day && !time}
+    <Fragment>
+      <div style={{ width: "100%", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        {service && (
+          <Fragment>
+            <Paper
+              elevation={3}
               style={{
-                backgroundColor: day && time ? blueBg : "lightgray",
-                color: day && time ? blueColor : "white",
-                width: "10%",
                 margin: "0 auto",
-                marginTop: 32,
+                display: "flex",
+                width: "30%",
+                height: "300",
+                marginTop: 64,
+                padding: 32,
+                flexDirection: "column",
               }}
-              onClick={bookService}
             >
-              Agendar
-            </Button>
-          )}
-        </Fragment>
-      )}
-    </div>
+              <Typography
+                variant="h4"
+                component="h3"
+                style={{ textAlign: "center", color: blueColor, marginBottom: 32, fontFamily: "Futura" }}
+              >
+                {service.name}
+              </Typography>
+              <Typography
+                variant="body2"
+                component="p"
+                style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
+              >
+                <i>{service.description}</i>
+              </Typography>
+              <Typography
+                variant="body2"
+                component="p"
+                style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
+              >
+                <strong>Empresa:</strong> {service.company.name}
+              </Typography>
+              <Typography
+                variant="body2"
+                component="p"
+                style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
+              >
+                <strong>Endereço: </strong>
+                <span onClick={openMap} style={{ cursor: "pointer" }}>
+                  {buildAddress(service.company)}
+                </span>
+              </Typography>
+              <Typography
+                variant="body2"
+                component="p"
+                style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
+              >
+                <strong>Telefone:</strong> {service.company.phone}
+              </Typography>
+              <Typography
+                variant="body2"
+                component="p"
+                style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
+              >
+                <strong>Email:</strong> {service.company.email}
+              </Typography>
+              <Typography
+                variant="body2"
+                component="p"
+                style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
+              >
+                <strong>Duração:</strong> {service.duration}
+              </Typography>
+              <Typography
+                variant="body2"
+                component="p"
+                style={{ marginBottom: 8, textAlign: "center", fontFamily: "Futura" }}
+              >
+                <strong>Valor:</strong>{" "}
+                {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(service.value)} (
+                {TYPES[service.type]})
+              </Typography>
+              {authedUser && authedUser.jwt && authedUser.userId && (
+                <div style={{ display: "flex", width: "60%", margin: "0 auto" }}>
+                  <FormControl style={{ flex: 1, margin: 8 }}>
+                    <InputLabel id="day-select" style={{ fontFamily: "Futura" }}>
+                      Dia
+                    </InputLabel>
+                    <Select id="day-select" value={day} onChange={(e) => setDay(e.target.value)}>
+                      {buildDayOptions(service).map((opt) => {
+                        return (
+                          <MenuItem key={opt} value={opt} style={{ fontFamily: "Futura" }}>
+                            {opt}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                  <FormControl style={{ flex: 1, margin: 8 }}>
+                    <InputLabel id="time-select" style={{ fontFamily: "Futura" }}>
+                      Horario
+                    </InputLabel>
+                    <Select id="time-select" value={time} onChange={(e) => setTime(e.target.value)} disabled={!day}>
+                      {timeOptions.map((opt) => {
+                        return (
+                          <MenuItem key={opt} value={opt} style={{ fontFamily: "Futura" }}>
+                            {opt}
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </div>
+              )}
+            </Paper>
+
+            {authedUser && authedUser.jwt && authedUser.userId && (
+              <Button
+                disabled={!day && !time}
+                style={{
+                  backgroundColor: day && time ? blueBg : "lightgray",
+                  color: day && time ? blueColor : "white",
+                  width: "10%",
+                  margin: "0 auto",
+                  marginTop: 32,
+                }}
+                onClick={bookService}
+              >
+                Agendar
+              </Button>
+            )}
+          </Fragment>
+        )}
+      </div>
+
+      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
+    </Fragment>
   );
 };
 

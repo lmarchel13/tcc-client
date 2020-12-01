@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
-import Paper from "@material-ui/core/Paper";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import { Paper, Button, TextField, Divider } from "@material-ui/core";
+import { GoogleLogin } from "react-google-login";
 
 import SnackBar from "./SnackBar";
 import { blueBg, blueColor } from "../utils/colors";
@@ -32,6 +31,7 @@ const Login = ({ dispatch }) => {
     const { err, data } = await API.login(payload);
 
     if (err) {
+      console.log("err", err);
       setSnackBarData({ text: err.description, severity: "error" });
       setOpenSnackBar(true);
     } else {
@@ -47,47 +47,98 @@ const Login = ({ dispatch }) => {
     }
   };
 
+  const onSuccess = async ({ googleId }) => {
+    const { err, data } = await API.login({ googleId });
+
+    if (err) {
+      setSnackBarData({ text: err.description, severity: "error" });
+      setOpenSnackBar(true);
+    } else {
+      console.log("Logged in", data);
+      const { userId, jwt, userCompanies } = data;
+
+      Cache.setToken(jwt);
+      Cache.setUserId(userId);
+      Cache.setUserCompanies(userCompanies);
+
+      dispatch(setAuthedUser({ userId, jwt, userCompanies }));
+
+      history.push("/");
+    }
+  };
+
+  const onFailure = (err) => {
+    console.error("Error:", err);
+    setSnackBarData({ text: "Credenciais inválidas", severity: "error" });
+    setOpenSnackBar(true);
+  };
+
   return (
-    <div style={{ width: "30%", margin: "0 auto", height: 500, marginTop: 64 }}>
+    <Fragment>
+      <div style={{ width: "100%", margin: "0 auto", marginTop: 64 }}>
+        <form noValidate autoComplete="off" onSubmit={onSubmit}>
+          <Paper style={{ width: 800, height: 550, margin: "0 auto" }}>
+            <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>
+              Olá! Digite o seu e-mail e senha
+            </h2>
+            <div style={{ width: "90%", margin: "0 auto", padding: 32, display: "flex", flexDirection: "column" }}>
+              <TextField
+                name="email"
+                label="E-mail"
+                type="email"
+                style={{ flex: 1, margin: 16 }}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+              <TextField
+                name="password"
+                label="Senha"
+                type="password"
+                style={{ flex: 1, margin: 16 }}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+            </div>
+            <div style={{ width: "40%", margin: "0 auto" }}>
+              <Button
+                variant="contained"
+                size="large"
+                style={{ backgroundColor: blueBg, width: "100%", color: blueColor, marginBottom: 32 }}
+                type="submit"
+              >
+                Entrar
+              </Button>
+            </div>
+            <Divider orientation="horizontal" style={{ width: "80%", margin: "0 auto" }} />
+            <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>Ou</h2>
+            <div
+              style={{
+                width: "90%",
+                margin: "0 auto",
+                padding: 32,
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div style={{ display: "flex", marginBottom: 32, margin: "0 auto" }}>
+                <GoogleLogin
+                  clientId="527214406910-5rkm3vv611cftn5o8969539m3dreg6t6.apps.googleusercontent.com"
+                  buttonText="Entre com o Google"
+                  onSuccess={(response) => onSuccess(response)}
+                  onFailure={(err) => onFailure(err)}
+                  cookiePolicy={"single_host_origin"}
+                  // isSignedIn={true}
+                />
+              </div>
+            </div>
+          </Paper>
+        </form>
+      </div>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
-      <form noValidate autoComplete="off" onSubmit={onSubmit}>
-        <Paper style={{ width: 800, height: 350, margin: "0 auto" }}>
-          <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>
-            Olá! Digite o seu e-mail e senha
-          </h2>
-          <div style={{ width: "90%", margin: "0 auto", padding: 32, display: "flex", flexDirection: "column" }}>
-            <TextField
-              name="email"
-              label="E-mail"
-              type="email"
-              style={{ flex: 1, margin: 16 }}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            />
-            <TextField
-              name="password"
-              label="Senha"
-              type="password"
-              style={{ flex: 1, margin: 16 }}
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
-            />
-          </div>
-        </Paper>
-        <div style={{ width: "40%", margin: "0 auto" }}>
-          <Button
-            variant="contained"
-            size="large"
-            style={{ marginTop: 32, backgroundColor: blueBg, width: "100%", color: blueColor }}
-            type="submit"
-          >
-            Entrar
-          </Button>
-        </div>
-      </form>
-    </div>
+    </Fragment>
   );
 };
 

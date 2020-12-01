@@ -37,7 +37,17 @@ const Categories = () => {
   return (
     <Fragment>
       <Title title="Categorias" />
-      <div style={{ display: "flex", flex: 1, flexWrap: "wrap", width: "75%", margin: "0 auto", marginTop: 64 }}>
+      <div
+        style={{
+          display: "flex",
+          flex: 1,
+          flexWrap: "wrap",
+          width: "75%",
+          margin: "0 auto",
+          marginTop: 64,
+          justifyContent: "center",
+        }}
+      >
         {!!categories.length &&
           categories.map((category) => {
             return <CategoryCard key={category.id} data={category} />;

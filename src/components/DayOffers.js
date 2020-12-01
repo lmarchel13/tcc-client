@@ -77,6 +77,7 @@ const DayOffers = ({ categories, homeScreen = false }) => {
           width: "70%",
           margin: "0 auto",
           marginTop: 64,
+          justifyContent: "center",
         }}
       >
         <div

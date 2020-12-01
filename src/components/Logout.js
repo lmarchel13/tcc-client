@@ -10,9 +10,14 @@ const Logout = ({ dispatch }) => {
 
   useEffect(() => {
     dispatch(removeAuthedUser());
+
     Cache.clearToken();
+    Cache.clearUserCompanies();
+    Cache.clearUserId();
+
     history.push("/");
-  }, [dispatch, history]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return null;
 };
