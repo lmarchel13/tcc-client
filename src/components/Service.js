@@ -1,10 +1,12 @@
 import React, { useState, useEffect, Fragment } from "react";
 import moment from "moment";
 import { connect } from "react-redux";
+import { Widget, addResponseMessage, addUserMessage } from "react-chat-widget";
+import { Typography, Paper, Button, Select, MenuItem, InputLabel, FormControl } from "@material-ui/core";
 
 import "./styles/futura.css";
-
-import { Typography, Paper, Button, Select, MenuItem, InputLabel, FormControl } from "@material-ui/core";
+import "react-chat-widget/lib/styles.css";
+import "./styles/chat-widget.css";
 
 import SnackBar from "./SnackBar";
 
@@ -26,6 +28,7 @@ const Service = ({
   const [day, setDay] = useState("");
   const [time, setTime] = useState("");
   const [timeOptions, setTimeOptions] = useState([]);
+  // const [messages, setMessages] = useState([]);
 
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -34,6 +37,38 @@ const Service = ({
     setOpenSnackBar(false);
     setSnackBarData({});
   };
+
+  useEffect(() => {
+    const getMessages = async ({ limit, offset } = {}) => {
+      console.log("getMessages called");
+      if (!authedUser || !authedUser.jwt || !service || !service.company) {
+        return [];
+      }
+
+      const payload = { companyId: service.company.id, limit, offset };
+
+      console.log("payload", payload);
+
+      const { err, data = [] } = await API.getMessagesForUser(payload, authedUser.jwt);
+
+      console.log({ err, data });
+
+      if (err) {
+        setSnackBarData({ text: err.description || "Erro ao carregar as mensagens", severity: "error" });
+        setOpenSnackBar(true);
+        return;
+      }
+
+      return data;
+    };
+
+    getMessages().then((msgs = []) => {
+      msgs.forEach((msg) => {
+        console.log("message:", msg);
+        msg.direction === "from-user" ? addUserMessage(msg.text) : addResponseMessage(msg.text);
+      });
+    });
+  }, [authedUser, service]);
 
   useEffect(() => {
     const fetchService = async () => {
@@ -154,6 +189,25 @@ const Service = ({
 
     resetSelects();
     setOpenSnackBar(true);
+  };
+
+  const handleNewUserMessage = async (text) => {
+    const direction = "from-user";
+    const payload = { text, companyId: service.company.id, direction };
+
+    try {
+      const { err } = await API.sendMessage(payload, authedUser.jwt);
+
+      if (err) {
+        setSnackBarData({ text: err.description, severity: "error" });
+        setOpenSnackBar(true);
+        return;
+      }
+    } catch (error) {
+      setSnackBarData({ text: "Erro ao enviar mensagem", severity: "error" });
+      setOpenSnackBar(true);
+      return;
+    }
   };
 
   const resetSelects = (time) => {
@@ -292,7 +346,15 @@ const Service = ({
           </Fragment>
         )}
       </div>
-
+      {authedUser && authedUser.userId && authedUser.jwt && (
+        <Widget
+          handleNewUserMessage={handleNewUserMessage}
+          title="Enviar mensagem"
+          subtitle={service && service.company.name}
+          senderPlaceHolder="Digite uma mensagem..."
+          showTimeStamp={false}
+        />
+      )}
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
     </Fragment>
   );

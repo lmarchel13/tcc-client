@@ -96,7 +96,7 @@ const Register = () => {
     <Fragment>
       <div style={{ width: "100%", margin: "0 auto", height: 500, marginTop: 64 }}>
         <form noValidate autoComplete="off" onSubmit={onSubmit}>
-          <Paper style={{ width: 800, height: 600, margin: "0 auto" }}>
+          <Paper style={{ width: 800, height: 600, margin: "0 auto" }} elevation={3}>
             <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>
               Preencha seus dados
             </h2>

@@ -253,3 +253,32 @@ export const deleteTransaction = async (id, token) => {
     return errorHandler(error);
   }
 };
+
+export const sendMessage = async (payload, token) => {
+  try {
+    const { data } = await instance.post("/messages", payload, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getMessagesForUser = async ({ companyId, limit = 20, offset = 0 }, token) => {
+  const endpoint = `/messages?companyId=${companyId}&limit=${limit}&offset=${offset}`;
+  try {
+    const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getMessagesForCompanies = async (ids = [], token) => {
+  const endpoint = `/companies/messages?ids=${ids.join(",")}`;
+  try {
+    const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};

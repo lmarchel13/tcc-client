@@ -37,7 +37,7 @@ const SearchBar = ({ placeholder = "", onClick = defineOnClickFn, style = {}, te
   const classes = useStyles();
 
   return (
-    <Paper component="form" className={classes.root} style={{ backgroundColor: "#F6F9FD", ...style }}>
+    <Paper component="form" className={classes.root} style={{ backgroundColor: "#F6F9FD", ...style }} elevation={3}>
       <InputBase
         className={classes.input}
         placeholder={placeholder}

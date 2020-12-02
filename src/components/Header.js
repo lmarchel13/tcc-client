@@ -13,7 +13,7 @@ const links = [
   { to: "/categories", text: "Categorias" },
   { to: "/offers", text: "Ofertas do dia" },
   { to: "/companies", text: "Anunciantes" },
-  { to: "/transactions", text: "Histórico" },
+  // { to: "/transactions", text: "Histórico" },
 ];
 
 const Header = ({ loggedIn }) => {

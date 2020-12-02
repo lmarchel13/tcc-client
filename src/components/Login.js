@@ -77,7 +77,7 @@ const Login = ({ dispatch }) => {
     <Fragment>
       <div style={{ width: "100%", margin: "0 auto", marginTop: 64 }}>
         <form noValidate autoComplete="off" onSubmit={onSubmit}>
-          <Paper style={{ width: 800, height: 550, margin: "0 auto" }}>
+          <Paper elevation={3} style={{ width: 800, height: 550, margin: "0 auto" }}>
             <h2 style={{ textAlign: "center", fontFamily: "Futura", color: blueColor, paddingTop: 32 }}>
               Olá! Digite o seu e-mail e senha
             </h2>
