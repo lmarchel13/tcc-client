@@ -1,8 +1,9 @@
 import React, { useState, useEffect, Fragment } from "react";
 import moment from "moment";
 import { connect } from "react-redux";
-import { Widget, addResponseMessage, addUserMessage } from "react-chat-widget";
+import { Widget, addResponseMessage, addUserMessage, dropMessages } from "react-chat-widget";
 import { Typography, Paper, Button, Select, MenuItem, InputLabel, FormControl } from "@material-ui/core";
+import { io } from "socket.io-client";
 
 import "./styles/futura.css";
 import "react-chat-widget/lib/styles.css";
@@ -28,10 +29,19 @@ const Service = ({
   const [day, setDay] = useState("");
   const [time, setTime] = useState("");
   const [timeOptions, setTimeOptions] = useState([]);
-  // const [messages, setMessages] = useState([]);
+  const [conversation, setConversation] = useState({});
 
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
+
+  useEffect(() => {
+    const socket = io("http://localhost:8000");
+
+    socket.on("NEW_MESSAGE_FROM_COMPANY", (payload) => {
+      console.log("payload from company:", payload);
+      addResponseMessage(payload.message.text);
+    });
+  }, []);
 
   const resetSnackBarState = () => {
     setOpenSnackBar(false);
@@ -39,36 +49,22 @@ const Service = ({
   };
 
   useEffect(() => {
-    const getMessages = async ({ limit, offset } = {}) => {
-      console.log("getMessages called");
-      if (!authedUser || !authedUser.jwt || !service || !service.company) {
-        return [];
-      }
+    setConversation({});
+    dropMessages();
+  }, [authedUser]);
 
-      const payload = { companyId: service.company.id, limit, offset };
-
-      console.log("payload", payload);
-
-      const { err, data = [] } = await API.getMessagesForUser(payload, authedUser.jwt);
-
-      console.log({ err, data });
-
-      if (err) {
-        setSnackBarData({ text: err.description || "Erro ao carregar as mensagens", severity: "error" });
-        setOpenSnackBar(true);
-        return;
-      }
-
-      return data;
+  useEffect(() => {
+    const getMessages = async (conversation = {}) => {
+      const { messages = [] } = conversation;
+      return messages;
     };
 
-    getMessages().then((msgs = []) => {
-      msgs.forEach((msg) => {
-        console.log("message:", msg);
-        msg.direction === "from-user" ? addUserMessage(msg.text) : addResponseMessage(msg.text);
+    getMessages(conversation).then((data = []) => {
+      data.forEach((msg) => {
+        msg && msg.sender === "USER" ? addUserMessage(msg.text) : addResponseMessage(msg.text);
       });
     });
-  }, [authedUser, service]);
+  }, [conversation]);
 
   useEffect(() => {
     const fetchService = async () => {
@@ -83,10 +79,31 @@ const Service = ({
       }
 
       setService(data);
+
+      return data;
     };
 
     fetchService();
   }, [serviceId]);
+
+  useEffect(() => {
+    const fetchConversation = async (service) => {
+      if (authedUser && authedUser.jwt && service && service.company) {
+        const { data = {}, err } = await API.getConversation(service, authedUser.jwt);
+
+        if (err) {
+          resetSnackBarState();
+          setSnackBarData({ text: err.description, severity: "error" });
+          setOpenSnackBar(true);
+          return;
+        }
+
+        setConversation(data);
+      }
+    };
+
+    fetchConversation(service);
+  }, [service, authedUser]);
 
   useEffect(() => {
     const fetchTransactionsByDay = async (service, day) => {
@@ -191,22 +208,36 @@ const Service = ({
     setOpenSnackBar(true);
   };
 
+  const findConversation = async (service) => {
+    const { data, err } = await API.getConversationOrCreate(service, authedUser.jwt);
+
+    if (err) throw new Error("Erro ao enviar mensagem");
+
+    return data;
+  };
+
   const handleNewUserMessage = async (text) => {
-    const direction = "from-user";
-    const payload = { text, companyId: service.company.id, direction };
+    const sender = "USER";
+    const payload = { text, companyId: service.company.id, sender };
 
     try {
-      const { err } = await API.sendMessage(payload, authedUser.jwt);
+      let contextConversation = conversation;
+
+      if (Object.keys(contextConversation).length === 0) {
+        contextConversation = await findConversation(service);
+        setConversation(contextConversation);
+      }
+
+      const { err, data } = await API.sendMessage(contextConversation.id, payload, authedUser.jwt);
 
       if (err) {
-        setSnackBarData({ text: err.description, severity: "error" });
-        setOpenSnackBar(true);
-        return;
+        throw new Error("Erro ao enviar mensagem");
       }
+
+      // setConversation({ ...conversation, messages: conversation.messages.push(data) });
     } catch (error) {
-      setSnackBarData({ text: "Erro ao enviar mensagem", severity: "error" });
+      setSnackBarData({ text: error.message, severity: "error" });
       setOpenSnackBar(true);
-      return;
     }
   };
 

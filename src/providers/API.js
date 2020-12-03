@@ -254,9 +254,11 @@ export const deleteTransaction = async (id, token) => {
   }
 };
 
-export const sendMessage = async (payload, token) => {
+export const sendMessage = async (conversationId, payload, token) => {
   try {
-    const { data } = await instance.post("/messages", payload, { headers: buildHeaders({ token }) });
+    const { data } = await instance.post(`/conversations/${conversationId}/messages`, payload, {
+      headers: buildHeaders({ token }),
+    });
     return { data };
   } catch (error) {
     return errorHandler(error);
@@ -275,6 +277,44 @@ export const getMessagesForUser = async ({ companyId, limit = 20, offset = 0 }, 
 
 export const getMessagesForCompanies = async (ids = [], token) => {
   const endpoint = `/companies/messages?ids=${ids.join(",")}`;
+  try {
+    const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getConversationOrCreate = async (service, token) => {
+  const endpoint = "/conversations";
+
+  const payload = {
+    companyId: service.company.id,
+    serviceId: service.id,
+  };
+
+  try {
+    const { data } = await instance.post(endpoint, payload, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getConversation = async (service, token) => {
+  const endpoint = `/conversations?companyId=${service.company.id}&serviceId=${service.id}`;
+
+  try {
+    const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const getCompanyConversations = async (token) => {
+  const endpoint = `/companies/conversations`;
+
   try {
     const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
     return { data };

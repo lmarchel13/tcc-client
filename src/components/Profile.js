@@ -94,12 +94,11 @@ const Profile = ({ authedUser, dispatch, companies = [] }) => {
           flex: 1,
           margin: "0 auto",
           width: "70%",
-          height: "75vh",
           marginTop: 64,
         }}
       >
         {/* Menu */}
-        <div style={{ flex: 2, justifyContent: "center", margin: "0 auto", alignItems: "center" }}>
+        <div style={{ flex: 2, justifyContent: "center", margin: "0 auto", alignItems: "center", marginRight: 32 }}>
           <ProfileMenuList tabs={TABS} setTab={setTab} style={{ marginTop: 128 }} />
         </div>
         {/* Main */}

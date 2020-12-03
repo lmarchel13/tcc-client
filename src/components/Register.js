@@ -79,7 +79,13 @@ const Register = () => {
       setSnackBarData({ text: err.description, severity: "error" });
       setOpenSnackBar(true);
     } else {
-      history.push("/signin");
+      const { err } = await API.login({ googleId });
+      if (err) {
+        setSnackBarData({ text: err.description, severity: "error" });
+        setOpenSnackBar(true);
+      } else {
+        history.push("/");
+      }
     }
   };
 

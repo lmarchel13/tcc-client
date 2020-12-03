@@ -1,35 +1,34 @@
-import { Paper } from "@material-ui/core";
+import React, { Fragment, useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
-
-import React, { Fragment, useState, useEffect } from "react";
-
-import { Chip, Card, CardContent, Button, Typography, TextField } from "@material-ui/core";
+import { Card, CardContent, Button, Typography, TextField, Paper } from "@material-ui/core";
 
 import Title from "./Title";
+import SnackBar from "./SnackBar";
+
 import { blueBg, blueColor } from "../utils/colors";
 import { API } from "../providers";
+
+import { io } from "socket.io-client";
 
 const UserCard = ({ name, timestamp, lastMessage, onClick }) => {
   return (
     <Card
       style={{
         backgroundColor: blueBg,
-        minWidth: 390,
-        maxWidth: 390,
         borderBottom: `0.2px solid ${blueColor}`,
         borderRadius: "0px",
       }}
       onClick={onClick}
     >
-      <CardContent>
+      <CardContent style={{ height: 40, maxHeight: 40 }}>
         <Typography variant="body2" component="p" style={{ color: "grey", float: "right" }}>
           {timestamp}
         </Typography>
-        <Typography variant="h5" component="h2" style={{ fontFamily: "Futura", color: blueColor }} noWrap={true}>
+        <Typography variant="h6" component="h3" style={{ fontFamily: "Futura", color: blueColor }} noWrap={true}>
           {name}
         </Typography>
-        <Typography variant="body2" component="p" noWrap={true} style={{ color: "grey" }}>
+        <Typography variant="body2" component="p" style={{ color: "grey" }} noWrap={true}>
           {lastMessage}
         </Typography>
       </CardContent>
@@ -38,23 +37,21 @@ const UserCard = ({ name, timestamp, lastMessage, onClick }) => {
 };
 
 const MessageCard = ({ data }) => {
-  const { id, text, direction } = data;
-
-  const floatStyle = direction === "from-user" ? "left" : "right";
-  const bgColor = direction === "from-user" ? "lightgray" : blueBg;
+  const { id, text, sender } = data;
+  const floatStyle = sender === "USER" ? "left" : "right";
+  const bgColor = sender === "USER" ? "lightgray" : blueBg;
 
   return (
     <div key={id}>
       <Card
         style={{
           backgroundColor: bgColor,
-          maxWidth: 200,
+          maxWidth: 300,
           margin: 5,
           float: floatStyle,
-          marginRight: 36,
         }}
       >
-        <Typography variant="body2" component="p" noWrap={false} style={{ padding: 8 }}>
+        <Typography variant="body2" component="p" noWrap={false} style={{ padding: 8, wordWrap: "break-word" }}>
           {text}
         </Typography>
       </Card>
@@ -62,52 +59,90 @@ const MessageCard = ({ data }) => {
   );
 };
 
-const ChatWindow = ({ user, authedUser, companies }) => {
+const ChatWindow = ({ authedUser }) => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
-  const [messagesByUser, setMessagesByUser] = useState({});
+  const [conversations, setConversations] = useState([]);
+  const [conversationOpen, setConversationOpen] = useState({});
   const [messagesInChat, setMessagesInChat] = useState([]);
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      const myCompaniesIDs = companies.map((company) => company.id);
+  const [snackBarData, setSnackBarData] = useState({});
+  const [openSnackBar, setOpenSnackBar] = useState(false);
 
-      const { data, err } = await API.getMessagesForCompanies(myCompaniesIDs, authedUser.jwt);
+  const socket = io("http://localhost:8000");
 
-      if (err) {
-        // todo: add err handler
-        return;
+  socket.on("connect", () => {
+    socket.on("NEW_MESSAGE_FROM_USER", ({ message, conversationId }) => {
+      let changed = false;
+
+      conversations.forEach((conv) => {
+        if (!changed && conv && conv.id === conversationId && conv.messages && Array.isArray(conv.messages)) {
+          conv.messages.push(message);
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        console.log("setting new conversations");
+        setConversations(conversations);
+        console.log("Message added to conversation");
+
+        if (conversationOpen.id === conversationId) {
+          setMessagesInChat([...messagesInChat, message]);
+        }
       }
+    });
+  });
 
-      setMessagesByUser(data);
+  useEffect(() => {
+    const fetchConversations = async () => {
+      if (authedUser.jwt) {
+        const { err, data } = await API.getCompanyConversations(authedUser.jwt);
+
+        if (err) {
+          setSnackBarData({ text: err.description, severity: "error" });
+          setOpenSnackBar(false);
+          return;
+        }
+
+        setConversations(data);
+      }
     };
 
-    fetchMessages();
+    fetchConversations();
     setLoading(false);
   }, []);
 
-  const addMessage = (msg) => {
-    setMessagesInChat([...messagesInChat, msg]);
-  };
-
-  const handleMessageSend = () => {
-    const message = {
-      direction: "from-owner",
+  const handleMessageSend = async () => {
+    const payload = {
+      sender: "COMPANY",
       text: newMessage,
+      companyId: conversationOpen.company.id,
     };
 
-    addMessage(message);
+    const { err, data } = await API.sendMessage(conversationOpen.id, payload, authedUser.jwt);
+
+    if (err) {
+      setSnackBarData({ text: err.description, severity: "error" });
+      setOpenSnackBar(false);
+      return;
+    }
+
+    console.log("duplicated???", [...messagesInChat, data]);
+
+    setMessagesInChat([...messagesInChat, data]);
     setNewMessage("");
   };
 
-  const openChat = (id) => {
-    const messages = messagesByUser[id];
+  const openChat = (conversation) => {
+    setConversationOpen(conversation);
+    const { messages = [] } = conversation;
     setMessagesInChat(messages);
   };
 
   return (
     <Fragment>
-      <Title title="Minhas mensages" />
+      <Title title="Minhas mensagens" />
       {!loading && (
         <div style={{ display: "flex", flex: 1 }}>
           <Paper
@@ -115,8 +150,10 @@ const ChatWindow = ({ user, authedUser, companies }) => {
             style={{
               margin: "0 auto",
               display: "flex",
-              width: "90%",
-              height: 800,
+              width: "100%",
+              minHeight: 600,
+              maxHeight: 80,
+              minWidth: 800,
               maxWidth: 1000,
               marginTop: 64,
               flexDirection: "row",
@@ -131,23 +168,28 @@ const ChatWindow = ({ user, authedUser, companies }) => {
                 backgroundColor: "whitesmoke",
               }}
             >
-              {Object.keys(messagesByUser).length > 0 &&
-                Object.keys(messagesByUser).map((id) => {
+              {conversations.length > 0 &&
+                conversations.map((conversation) => {
+                  const {
+                    id,
+                    user: { firstName },
+                    messages = [],
+                  } = conversation;
+                  if (messages.length === 0) return null;
+
                   const format = "DD/MM/YYYY HH:mm";
-                  const userName = messagesByUser[id][0].sender.firstName;
-                  const { text: lastMessage, createdAt: timestamp } = messagesByUser[id][messagesByUser[id].length - 1];
+                  const { text: lastMessage, createdAt: timestamp } = messages[messages.length - 1];
 
                   return (
                     <UserCard
                       key={id}
-                      name={userName}
+                      name={firstName}
                       timestamp={moment(timestamp).format(format)}
                       lastMessage={lastMessage}
-                      onClick={() => openChat(id)}
+                      onClick={() => openChat(conversation)}
                     />
                   );
                 })}
-              {/*  */}
             </div>
             {/* Chat */}
             <div
@@ -162,14 +204,15 @@ const ChatWindow = ({ user, authedUser, companies }) => {
             >
               {/* Body */}
               <div
+                id="chat-body"
                 style={{
-                  flex: 12,
+                  flex: 10,
                   width: "100%",
-                  background: "whitesmokes",
+                  backgroundColor: "whitesmoke",
                   alignSelf: "flex-start",
                   display: "flex",
                   flexDirection: "column",
-                  padding: 16,
+                  overflowY: "auto",
                 }}
               >
                 {messagesInChat.length > 0 &&
@@ -215,6 +258,7 @@ const ChatWindow = ({ user, authedUser, companies }) => {
           </Paper>
         </div>
       )}
+      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
     </Fragment>
   );
 };
