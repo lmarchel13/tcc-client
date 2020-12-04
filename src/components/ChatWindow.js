@@ -9,7 +9,8 @@ import SnackBar from "./SnackBar";
 import { blueBg, blueColor } from "../utils/colors";
 import { API } from "../providers";
 
-import { io } from "socket.io-client";
+// import { io } from "socket.io-client";
+// const socket = io("http://localhost:8000");
 
 const UserCard = ({ name, timestamp, lastMessage, onClick }) => {
   return (
@@ -59,7 +60,7 @@ const MessageCard = ({ data }) => {
   );
 };
 
-const ChatWindow = ({ authedUser }) => {
+const ChatWindow = ({ authedUser, socket }) => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState([]);
@@ -69,29 +70,25 @@ const ChatWindow = ({ authedUser }) => {
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
-  const socket = io("http://localhost:8000");
+  socket.on("NEW_MESSAGE_FROM_USER", ({ message, conversationId }) => {
+    let changed = false;
 
-  socket.on("connect", () => {
-    socket.on("NEW_MESSAGE_FROM_USER", ({ message, conversationId }) => {
-      let changed = false;
-
-      conversations.forEach((conv) => {
-        if (!changed && conv && conv.id === conversationId && conv.messages && Array.isArray(conv.messages)) {
-          conv.messages.push(message);
-          changed = true;
-        }
-      });
-
-      if (changed) {
-        console.log("setting new conversations");
-        setConversations(conversations);
-        console.log("Message added to conversation");
-
-        if (conversationOpen.id === conversationId) {
-          setMessagesInChat([...messagesInChat, message]);
-        }
+    conversations.forEach((conv) => {
+      if (!changed && conv && conv.id === conversationId && conv.messages && Array.isArray(conv.messages)) {
+        conv.messages.push(message);
+        changed = true;
       }
     });
+
+    if (changed) {
+      console.log("setting new conversations");
+      setConversations(conversations);
+      console.log("Message added to conversation");
+
+      if (conversationOpen.id === conversationId) {
+        setMessagesInChat([...messagesInChat, message]);
+      }
+    }
   });
 
   useEffect(() => {
@@ -111,6 +108,7 @@ const ChatWindow = ({ authedUser }) => {
 
     fetchConversations();
     setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleMessageSend = async () => {
@@ -263,8 +261,8 @@ const ChatWindow = ({ authedUser }) => {
   );
 };
 
-const mapStateToProps = ({ authedUser, companies }) => {
-  return { authedUser, companies };
+const mapStateToProps = ({ authedUser, socket }) => {
+  return { authedUser, socket };
 };
 
 export default connect(mapStateToProps)(ChatWindow);

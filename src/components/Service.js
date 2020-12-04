@@ -3,7 +3,6 @@ import moment from "moment";
 import { connect } from "react-redux";
 import { Widget, addResponseMessage, addUserMessage, dropMessages } from "react-chat-widget";
 import { Typography, Paper, Button, Select, MenuItem, InputLabel, FormControl } from "@material-ui/core";
-import { io } from "socket.io-client";
 
 import "./styles/futura.css";
 import "react-chat-widget/lib/styles.css";
@@ -19,13 +18,18 @@ const TYPES = {
   "by-hour": "Por hora",
 };
 
+// import { io } from "socket.io-client";
+// const socket = io("http://localhost:8000");
+
 const Service = ({
   match: {
     params: { serviceId },
   },
   authedUser,
+  socket,
 }) => {
   const [service, setService] = useState(null);
+
   const [day, setDay] = useState("");
   const [time, setTime] = useState("");
   const [timeOptions, setTimeOptions] = useState([]);
@@ -34,14 +38,12 @@ const Service = ({
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
-  useEffect(() => {
-    const socket = io("http://localhost:8000");
-
+  if (socket) {
     socket.on("NEW_MESSAGE_FROM_COMPANY", (payload) => {
       console.log("payload from company:", payload);
       addResponseMessage(payload.message.text);
     });
-  }, []);
+  }
 
   const resetSnackBarState = () => {
     setOpenSnackBar(false);
@@ -228,13 +230,11 @@ const Service = ({
         setConversation(contextConversation);
       }
 
-      const { err, data } = await API.sendMessage(contextConversation.id, payload, authedUser.jwt);
+      const { err } = await API.sendMessage(contextConversation.id, payload, authedUser.jwt);
 
       if (err) {
         throw new Error("Erro ao enviar mensagem");
       }
-
-      // setConversation({ ...conversation, messages: conversation.messages.push(data) });
     } catch (error) {
       setSnackBarData({ text: error.message, severity: "error" });
       setOpenSnackBar(true);
@@ -391,8 +391,8 @@ const Service = ({
   );
 };
 
-const mapStateToProps = ({ authedUser }) => {
-  return { authedUser };
+const mapStateToProps = ({ authedUser, socket }) => {
+  return { authedUser, socket };
 };
 
 export default connect(mapStateToProps)(Service);

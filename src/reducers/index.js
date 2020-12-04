@@ -4,5 +4,6 @@ import { loadingBarReducer as loadingBar } from "react-redux-loading-bar";
 import authedUser from "./authedUser";
 import companies from "./company";
 import categories from "./category";
+import socket from "./webSocket";
 
-export default combineReducers({ authedUser, loadingBar, companies, categories });
+export default combineReducers({ authedUser, loadingBar, companies, categories, socket });

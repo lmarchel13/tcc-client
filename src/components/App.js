@@ -19,10 +19,14 @@ import DayOffers from "./DayOffers";
 import Home from "./Home";
 import Services from "./Services";
 import Transactions from "./Transactions";
+import { io } from "socket.io-client";
 
 import { API, Cache } from "../providers";
 import { setAuthedUser } from "../actions/authedUser";
 import { addCategories } from "../actions/category";
+import { defineWebSocket } from "../actions/webSocket";
+
+const socket = io("http://localhost:8000");
 
 const App = ({ dispatch }) => {
   useEffect(() => {
@@ -37,6 +41,9 @@ const App = ({ dispatch }) => {
       dispatch(addCategories(data));
     };
 
+    socket.emit("join", payload.userId);
+
+    dispatch(defineWebSocket(socket));
     dispatch(setAuthedUser(payload));
     fetchCategories();
   }, [dispatch]);
