@@ -71,8 +71,6 @@ const ChatWindow = ({ authedUser, socket }) => {
     const chat = document.getElementById("chat-body");
     if (chat) {
       const chatSize = chat.getElementsByClassName("message-card").length;
-
-      console.log("chatSize:", chatSize);
       chat.scrollTo({ top: Math.round(+chatSize / 10) * +chat.clientHeight });
     }
   };
@@ -161,7 +159,6 @@ const ChatWindow = ({ authedUser, socket }) => {
       socket.off("NEW_CONVERSATION");
 
       socket.on("NEW_MESSAGE_FROM_USER", ({ message, conversationId }) => {
-        console.log("New msg from user received:", message.id);
         if (conversationOpen.id === conversationId) {
           updateMessagesInChat(message.id, message).then(() => {
             scrollDown();
