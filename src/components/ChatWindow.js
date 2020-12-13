@@ -10,7 +10,6 @@ import { blueBg, blueColor } from "../utils/colors";
 import { API } from "../providers";
 
 const UserCard = ({ name, timestamp, lastMessage, onClick }) => {
-  console.log("user card loaded", { name, timestamp, lastMessage });
   return (
     <Card
       style={{
@@ -70,7 +69,9 @@ const ChatWindow = ({ authedUser, socket }) => {
 
   const scrollDown = () => {
     const chat = document.getElementById("chat-body");
-    chat.scrollTo({ top: (messagesInChat.length || 1 / 10) * chat.clientHeight });
+    if (chat) {
+      chat.scrollTo({ top: (messagesInChat.length / 10) * chat.clientHeight });
+    }
   };
 
   const updateConversations = (id, message) => {
@@ -89,7 +90,6 @@ const ChatWindow = ({ authedUser, socket }) => {
     if (socket) {
       socket.on("NEW_MESSAGE_FROM_USER", ({ message, conversationId }) => {
         if (conversationOpen.id === conversationId) {
-          console.log("adding new message");
           setMessagesInChat([...messagesInChat, message]);
           updateConversations(conversationId, message);
           scrollDown();
@@ -142,9 +142,14 @@ const ChatWindow = ({ authedUser, socket }) => {
 
   const openChat = (conversation) => {
     setConversationOpen(conversation);
+
     const { messages = [] } = conversation;
     setMessagesInChat(messages);
   };
+
+  useEffect(() => {
+    scrollDown();
+  }, [conversationOpen]);
 
   return (
     <Fragment>
@@ -181,9 +186,8 @@ const ChatWindow = ({ authedUser, socket }) => {
                     user: { firstName },
                     messages = [],
                   } = conversation;
-                  console.log("messages size:", messages);
+
                   if (messages.length === 0) return null;
-                  console.log("adding conversation:", id, { messages });
 
                   const format = "DD/MM/YYYY HH:mm";
                   const { text: lastMessage, createdAt: timestamp } = messages[messages.length - 1];
@@ -194,7 +198,9 @@ const ChatWindow = ({ authedUser, socket }) => {
                       name={firstName}
                       timestamp={moment(timestamp).format(format)}
                       lastMessage={lastMessage}
-                      onClick={() => openChat(conversation)}
+                      onClick={() => {
+                        openChat(conversation);
+                      }}
                     />
                   );
                 })}
@@ -229,39 +235,41 @@ const ChatWindow = ({ authedUser, socket }) => {
                   })}
               </div>
               {/* Text Field */}
-              <div
-                style={{
-                  display: "flex",
-                  flex: 1,
-                  backgroundColor: "lightblue",
-                  width: "100%",
-                  alignSelf: "flex-end",
-                  flexDirection: "row",
-                }}
-              >
-                <TextField
-                  className="send-message-text-field"
-                  placeholder="Enviar uma mensagem..."
-                  variant="outlined"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  fullWidth={true}
-                  rowsMax={1}
-                  style={{ padding: 5 }}
-                  disabled={messagesInChat.length === 0}
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") handleMessageSend();
+              {Object.keys(conversationOpen).length > 0 && (
+                <div
+                  style={{
+                    display: "flex",
+                    flex: 1,
+                    backgroundColor: "lightblue",
+                    width: "100%",
+                    alignSelf: "flex-end",
+                    flexDirection: "row",
                   }}
-                />
-                <Button
-                  variant="contained"
-                  style={{ backgroundColor: blueColor, color: "white" }}
-                  onClick={handleMessageSend}
-                  disabled={messagesInChat.length === 0}
                 >
-                  Enviar
-                </Button>
-              </div>
+                  <TextField
+                    className="send-message-text-field"
+                    placeholder="Enviar uma mensagem..."
+                    variant="outlined"
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    fullWidth={true}
+                    rowsMax={1}
+                    style={{ padding: 5 }}
+                    disabled={messagesInChat.length === 0}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") handleMessageSend();
+                    }}
+                  />
+                  <Button
+                    variant="contained"
+                    style={{ backgroundColor: blueColor, color: "white" }}
+                    onClick={handleMessageSend}
+                    disabled={messagesInChat.length === 0}
+                  >
+                    Enviar
+                  </Button>
+                </div>
+              )}
             </div>
           </Paper>
         </div>

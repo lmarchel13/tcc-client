@@ -170,9 +170,7 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
 
         setFoundCity(localidade);
         setState(uf);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }, 1500);
   };
 

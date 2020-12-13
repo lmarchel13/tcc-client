@@ -48,24 +48,22 @@ const UpdateProfileModal = ({ open, setOpen, user, authedUser }) => {
     try {
       if (!firstName || !lastName || !email || !password) throw new Error("Preencha todos os dados");
 
-      const payload = {
-        firstName,
-        lastName,
-        email,
-      };
+      const payload = { firstName, lastName, email };
 
-      if (password !== DEFAULT_PASSWORD) payload.password = password;
-
-      resetSnackBarState();
+      if (password !== DEFAULT_PASSWORD && password !== "") payload.password = password;
 
       const { err } = await API.updateUser(payload, authedUser.jwt);
 
-      if (err) throw new Error(err.description);
+      resetSnackBarState();
 
-      setOpen(false);
-
-      setSnackBarData({ text: "Perfil atualizado com sucesso", severity: "success" });
-      setOpenSnackBar(true);
+      if (err) {
+        setSnackBarData({ text: err.description, severity: "error" });
+        setOpenSnackBar(true);
+      } else {
+        setOpen(false);
+        setSnackBarData({ text: "Perfil atualizado com sucesso", severity: "success" });
+        setOpenSnackBar(true);
+      }
     } catch (error) {
       setSnackBarData({ text: error.message, severity: "error" });
       setOpenSnackBar(true);
@@ -78,6 +76,7 @@ const UpdateProfileModal = ({ open, setOpen, user, authedUser }) => {
     setFirstName(user.firstName);
     setLastName(user.lastName);
     setEmail(user.email);
+
     setPassword(DEFAULT_PASSWORD);
 
     setReset(false);

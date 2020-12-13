@@ -333,3 +333,14 @@ export const getReport = async (report, token) => {
     return errorHandler(error);
   }
 };
+
+export const getTransactionsByType = async (type, token) => {
+  const endpoint = `/transactions/${type}`;
+
+  try {
+    const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};

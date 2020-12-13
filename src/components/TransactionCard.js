@@ -32,8 +32,6 @@ const TransactionCard = ({ data, token, type } = {}) => {
     service: { name: serviceName },
   } = data;
 
-  console.log("TYPE", type);
-
   const deleteTransaction = async () => {
     const format = "DD/MM/YYYY";
     const today = moment(new Date(), format);

@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const defineOnClickFn = () => {
-  console.log("onClick function não existe");
+  throw new Error("you should define this function");
 };
 
 const SearchBar = ({ placeholder = "", onClick = defineOnClickFn, style = {}, term, setTerm }) => {

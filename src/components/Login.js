@@ -31,7 +31,6 @@ const Login = ({ dispatch }) => {
     const { err, data } = await API.login(payload);
 
     if (err) {
-      console.log("err", err);
       setSnackBarData({ text: err.description, severity: "error" });
       setOpenSnackBar(true);
     } else {
@@ -54,7 +53,6 @@ const Login = ({ dispatch }) => {
       setSnackBarData({ text: err.description, severity: "error" });
       setOpenSnackBar(true);
     } else {
-      console.log("Logged in", data);
       const { userId, jwt, userCompanies } = data;
 
       Cache.setToken(jwt);

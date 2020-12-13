@@ -82,7 +82,22 @@ const Reports = ({ authedUser }) => {
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
           {reportData.length === 0 ? (
-            <h1>Nenhum relatório encontrado nessa categoria</h1>
+            <Paper
+              elevation={3}
+              style={{
+                margin: "0 auto",
+                display: "flex",
+                width: "40%",
+                height: "300",
+                marginTop: 64,
+                padding: 32,
+                flexDirection: "column",
+              }}
+            >
+              <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: 24, fontFamily: "Futura" }}>
+                Nenhum relatório encontrado nessa categoria
+              </span>
+            </Paper>
           ) : (
             <Fragment>
               <Paper elevation={3} style={{ padding: 64 }}>
