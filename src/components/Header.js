@@ -60,7 +60,6 @@ const Header = ({ loggedIn }) => {
       <div
         style={{
           height: 100,
-          width: "100%",
           backgroundColor: blueBg,
           display: "flex",
           flex: 1,
@@ -68,7 +67,8 @@ const Header = ({ loggedIn }) => {
           boxShadow: "0 1px 0 0 rgba(0,0,0,.1)",
         }}
       >
-        <div style={{ alignSelf: "flex-end", marginRight: 100 }}>
+        {/* Logo */}
+        <div style={{ display: "flex", flex: 1, justifyContent: "center" }}>
           <img
             src={logo}
             alt="Logo"
@@ -80,11 +80,19 @@ const Header = ({ loggedIn }) => {
             style={{ cursor: "pointer" }}
           />
         </div>
-        <div style={{ marginRight: 100, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-          <div>
+        {/* Menu */}
+        <div
+          style={{
+            flex: 3,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "center" }}>
             <SearchBar placeholder="Buscar serviços..." onClick={search} term={term} setTerm={setTerm} />
           </div>
-          <div style={{ display: "flex", justifyContent: "space-evenly", marginBottom: 15 }}>
+          <div style={{ flex: 1, display: "flex", justifyContent: "space-evenly", marginTop: 16 }}>
             {links.map(({ to, text }) => {
               return (
                 <div key={to}>
@@ -105,17 +113,31 @@ const Header = ({ loggedIn }) => {
             })}
           </div>
         </div>
-        <div style={{ alignSelf: "flex-end", marginBottom: 15 }}>
+        {/* Access control */}
+        <div
+          style={{
+            display: "flex",
+            flex: 1,
+            justifyContent: "flex-end",
+            flexDirection: "column",
+          }}
+        >
           {/* User not logged in */}
           {!loggedIn && (
-            <div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                marginBottom: 16,
+              }}
+            >
               <NavLink
                 to="/signup"
                 exact
                 style={{
                   textDecoration: "none",
                   color: blueColor,
-                  marginLeft: 10,
+                  marginLeft: 16,
                   fontFamily: "Futura",
                 }}
               >
@@ -127,7 +149,7 @@ const Header = ({ loggedIn }) => {
                 style={{
                   textDecoration: "none",
                   color: blueColor,
-                  marginLeft: 10,
+                  marginLeft: 16,
                   fontFamily: "Futura",
                 }}
               >
@@ -137,14 +159,14 @@ const Header = ({ loggedIn }) => {
           )}
           {/* User logged in */}
           {loggedIn && (
-            <div>
+            <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 16 }}>
               <NavLink
                 to="/profile"
                 exact
                 style={{
                   textDecoration: "none",
                   color: blueColor,
-                  marginRight: 10,
+                  marginRight: 16,
                   fontFamily: "Futura",
                 }}
               >
@@ -156,7 +178,7 @@ const Header = ({ loggedIn }) => {
                 style={{
                   textDecoration: "none",
                   color: blueColor,
-                  marginLeft: 10,
+                  marginLeft: 16,
                   fontFamily: "Futura",
                 }}
               >

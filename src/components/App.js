@@ -35,16 +35,16 @@ const App = ({ dispatch }) => {
       userId: Cache.getUserId(),
     };
 
+    socket.emit("join", payload.userId);
+
     const fetchCategories = async () => {
       const { data = [] } = await API.getCategories();
-
       dispatch(addCategories(data));
     };
 
-    socket.emit("join", payload.userId);
-
     dispatch(defineWebSocket(socket));
     dispatch(setAuthedUser(payload));
+
     fetchCategories();
   }, [dispatch]);
 
@@ -71,8 +71,6 @@ const App = ({ dispatch }) => {
         <Route path="/services" exact component={Services} />
 
         <Route path="/companies" exact component={Companies} />
-
-        {/* <Route path="/auth" exact component={Auth} /> */}
 
         <Route path="/" exact component={Home} />
       </Fragment>

@@ -5,7 +5,12 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
+
 import InboxIcon from "@material-ui/icons/Inbox";
+import PersonIcon from "@material-ui/icons/Person";
+import StorageIcon from "@material-ui/icons/Storage";
+import HistoryIcon from "@material-ui/icons/History";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,21 +28,27 @@ const ProfileMenuList = ({ tabs, setTab, style = {} }) => {
       <List component="nav" aria-label="main mailbox folders">
         <ListItem button onClick={() => setTab(tabs.PROFILE)}>
           <ListItemIcon>
-            <InboxIcon />
+            <PersonIcon />
           </ListItemIcon>
           <ListItemText primary="Editar" />
         </ListItem>
         <ListItem button onClick={() => setTab(tabs.COMPANIES)}>
           <ListItemIcon>
-            <InboxIcon />
+            <StorageIcon />
           </ListItemIcon>
           <ListItemText primary="Minhas empresas" />
         </ListItem>
         <ListItem button onClick={() => setTab(tabs.TRANSACTIONS)}>
           <ListItemIcon>
-            <InboxIcon />
+            <HistoryIcon />
           </ListItemIcon>
           <ListItemText primary="Histórico" />
+        </ListItem>
+        <ListItem button onClick={() => setTab(tabs.REPORTS)}>
+          <ListItemIcon>
+            <AssessmentIcon />
+          </ListItemIcon>
+          <ListItemText primary="Relatórios" />
         </ListItem>
         <ListItem button onClick={() => setTab(tabs.MESSAGES)}>
           <ListItemIcon>

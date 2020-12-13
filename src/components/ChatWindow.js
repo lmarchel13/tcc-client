@@ -9,10 +9,8 @@ import SnackBar from "./SnackBar";
 import { blueBg, blueColor } from "../utils/colors";
 import { API } from "../providers";
 
-// import { io } from "socket.io-client";
-// const socket = io("http://localhost:8000");
-
 const UserCard = ({ name, timestamp, lastMessage, onClick }) => {
+  console.log("user card loaded", { name, timestamp, lastMessage });
   return (
     <Card
       style={{
@@ -70,26 +68,36 @@ const ChatWindow = ({ authedUser, socket }) => {
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
-  socket.on("NEW_MESSAGE_FROM_USER", ({ message, conversationId }) => {
-    let changed = false;
+  const scrollDown = () => {
+    const chat = document.getElementById("chat-body");
+    chat.scrollTo({ top: (messagesInChat.length || 1 / 10) * chat.clientHeight });
+  };
 
-    conversations.forEach((conv) => {
-      if (!changed && conv && conv.id === conversationId && conv.messages && Array.isArray(conv.messages)) {
+  const updateConversations = (id, message) => {
+    const newConvs = conversations.map((conv) => {
+      if (conv.id === id) {
         conv.messages.push(message);
-        changed = true;
       }
+
+      return conv;
     });
 
-    if (changed) {
-      console.log("setting new conversations");
-      setConversations(conversations);
-      console.log("Message added to conversation");
+    setConversations(newConvs);
+  };
 
-      if (conversationOpen.id === conversationId) {
-        setMessagesInChat([...messagesInChat, message]);
-      }
+  useEffect(() => {
+    if (socket) {
+      socket.on("NEW_MESSAGE_FROM_USER", ({ message, conversationId }) => {
+        if (conversationOpen.id === conversationId) {
+          console.log("adding new message");
+          setMessagesInChat([...messagesInChat, message]);
+          updateConversations(conversationId, message);
+          scrollDown();
+        }
+      });
     }
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socket, messagesInChat, conversationOpen]);
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -126,10 +134,10 @@ const ChatWindow = ({ authedUser, socket }) => {
       return;
     }
 
-    console.log("duplicated???", [...messagesInChat, data]);
-
     setMessagesInChat([...messagesInChat, data]);
+    updateConversations(conversationOpen.id, data);
     setNewMessage("");
+    scrollDown();
   };
 
   const openChat = (conversation) => {
@@ -173,7 +181,9 @@ const ChatWindow = ({ authedUser, socket }) => {
                     user: { firstName },
                     messages = [],
                   } = conversation;
+                  console.log("messages size:", messages);
                   if (messages.length === 0) return null;
+                  console.log("adding conversation:", id, { messages });
 
                   const format = "DD/MM/YYYY HH:mm";
                   const { text: lastMessage, createdAt: timestamp } = messages[messages.length - 1];

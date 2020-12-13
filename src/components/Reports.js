@@ -1,0 +1,109 @@
+import React, { useState, useEffect, Fragment } from "react";
+import { connect } from "react-redux";
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
+
+import { Paper, Tab } from "@material-ui/core";
+
+import Title from "./Title";
+import SnackBar from "./SnackBar";
+import { blueBg, blueColor } from "../utils/colors";
+import { API } from "../providers";
+
+const REPORT_TABS = {
+  LAST_YEAR: "LAST_YEAR",
+  LAST_6M: "LAST_6M",
+  PER_COMPANY: "PER_COMPANY",
+  PER_CATEGORY: "PER_CATEGORY",
+};
+
+const DEFAULT_DATA = [
+  { label: "Janeiro", value: 100 },
+  { label: "Fevereiro", value: 200 },
+];
+
+const Reports = ({ authedUser }) => {
+  const [reportTab, setReportTab] = useState(REPORT_TABS.LAST_YEAR);
+  const [reportData, setReportData] = useState(DEFAULT_DATA);
+
+  const [snackBarData, setSnackBarData] = useState({});
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+
+  const resetSnackBarState = () => {
+    setOpenSnackBar(false);
+    setSnackBarData({});
+  };
+
+  useEffect(() => {
+    const fetchReport = async () => {
+      const { data = [], err } = await API.getReport(reportTab, authedUser.jwt);
+
+      if (err) {
+        resetSnackBarState();
+        setSnackBarData({ text: err.description, severity: "error" });
+        setOpenSnackBar(true);
+      }
+
+      return data;
+    };
+
+    fetchReport().then((res) => setReportData(res));
+  }, [authedUser, reportTab]);
+
+  const isActive = (activeTab) => {
+    return activeTab === reportTab ? blueColor : blueBg;
+  };
+
+  return (
+    <Fragment>
+      <Title title="Relatórios de vendas" style={{ marginBottom: 16, marginTop: 0 }} />
+
+      <div>
+        <div style={{ display: "flex", marginTop: 32, marginBottom: 32, justifyContent: "center" }}>
+          <Tab
+            label="Últimos 12 meses"
+            onClick={() => setReportTab(REPORT_TABS.LAST_YEAR)}
+            style={{ color: isActive(REPORT_TABS.LAST_YEAR) }}
+          />
+          <Tab
+            label="Últimos 6 meses"
+            onClick={() => setReportTab(REPORT_TABS.LAST_6M)}
+            style={{ color: isActive(REPORT_TABS.LAST_6M) }}
+          />
+          <Tab
+            label="Por empresa"
+            onClick={() => setReportTab(REPORT_TABS.PER_COMPANY)}
+            style={{ color: isActive(REPORT_TABS.PER_COMPANY) }}
+          />
+          <Tab
+            label="Por categoria"
+            onClick={() => setReportTab(REPORT_TABS.PER_CATEGORY)}
+            style={{ color: isActive(REPORT_TABS.PER_CATEGORY) }}
+          />
+        </div>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          {reportData.length === 0 ? (
+            <h1>Nenhum relatório encontrado nessa categoria</h1>
+          ) : (
+            <Fragment>
+              <Paper elevation={3} style={{ padding: 64 }}>
+                <BarChart width={700} height={400} data={reportData} maxBarSize={10} barSize={10}>
+                  <XAxis padding={{ left: 20, right: 100 }} type="category" dataKey="label" />
+                  <YAxis type="number" dataKey="value" scale="quantile" />
+                  <CartesianGrid horizontal={false} />
+                  <Bar dataKey="value" fill={blueColor} />
+                </BarChart>
+              </Paper>
+            </Fragment>
+          )}
+        </div>
+      </div>
+      <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
+    </Fragment>
+  );
+};
+
+const mapStateToProps = ({ authedUser }) => {
+  return { authedUser };
+};
+
+export default connect(mapStateToProps)(Reports);

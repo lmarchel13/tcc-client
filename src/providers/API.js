@@ -322,3 +322,14 @@ export const getCompanyConversations = async (token) => {
     return errorHandler(error);
   }
 };
+
+export const getReport = async (report, token) => {
+  const endpoint = `/reports?name=${report}`;
+
+  try {
+    const { data } = await instance.get(endpoint, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};

@@ -11,6 +11,7 @@ import CreateCompanyModal from "./CreateCompanyModal";
 import UpdateProfileModal from "./UpdateProfileModal";
 import CompanyCard from "./CompanyCard";
 import Transactions from "./Transactions";
+import Reports from "./Reports";
 import ChatWindow from "./ChatWindow";
 import ProfileMenuList from "./ProfileMenuList";
 
@@ -22,6 +23,7 @@ const TABS = {
   PROFILE: "PROFILE",
   COMPANIES: "COMPANIES",
   TRANSACTIONS: "TRANSACTIONS",
+  REPORTS: "REPORTS",
   MESSAGES: "MESSAGES",
 };
 
@@ -204,7 +206,9 @@ const Profile = ({ authedUser, dispatch, companies = [] }) => {
           )}
           {/* HISTORICO */}
           {tab === TABS.TRANSACTIONS && <Transactions />}
+          {/* MENSAGENS */}
           {tab === TABS.MESSAGES && <ChatWindow user={user} />}
+          {tab === TABS.REPORTS && <Reports />}
           <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
           <CreateCompanyModal open={openModal} setOpen={setOpenModal} userId={authedUser} />
           {!!user && <UpdateProfileModal open={updateProfileModal} setOpen={setUpdateProfileModal} user={user} />}

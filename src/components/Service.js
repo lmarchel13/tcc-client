@@ -18,9 +18,6 @@ const TYPES = {
   "by-hour": "Por hora",
 };
 
-// import { io } from "socket.io-client";
-// const socket = io("http://localhost:8000");
-
 const Service = ({
   match: {
     params: { serviceId },
@@ -38,12 +35,13 @@ const Service = ({
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
 
-  if (socket) {
-    socket.on("NEW_MESSAGE_FROM_COMPANY", (payload) => {
-      console.log("payload from company:", payload);
-      addResponseMessage(payload.message.text);
-    });
-  }
+  useEffect(() => {
+    if (socket) {
+      socket.on("NEW_MESSAGE_FROM_COMPANY", (payload) => {
+        addResponseMessage(payload.message.text);
+      });
+    }
+  }, [socket]);
 
   const resetSnackBarState = () => {
     setOpenSnackBar(false);
