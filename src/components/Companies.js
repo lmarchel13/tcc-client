@@ -60,15 +60,17 @@ const Companies = ({ searchBarEnabled = true, homeScreen = false }) => {
 
   return (
     <Fragment>
-      {!homeScreen && <Title title="Empresas" />}
+      {!homeScreen && <Title title="Anunciantes" />}
       {searchBarEnabled && (
-        <SearchBar
-          placeholder="Buscar empresas..."
-          style={{ margin: "0 auto", marginTop: 64 }}
-          onClick={search}
-          term={term}
-          setTerm={setTerm}
-        />
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <SearchBar
+            placeholder="Buscar anunciantes..."
+            style={{ marginTop: 32, backgroundColor: "white" }}
+            onClick={search}
+            term={term}
+            setTerm={setTerm}
+          />
+        </div>
       )}
       {!loading && companies.length > 0 ? (
         <div

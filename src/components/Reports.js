@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
-import { BarChart, Bar, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
+import { BarChart, Bar, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import { Paper, Tab } from "@material-ui/core";
 

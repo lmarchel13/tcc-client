@@ -3,17 +3,12 @@ import { connect } from "react-redux";
 
 import { Divider, Paper } from "@material-ui/core";
 
-import { CSVLink } from "react-csv";
-import { Button } from "@material-ui/core";
-import GetAppIcon from "@material-ui/icons/GetApp";
-
 import Title from "./Title";
 import SnackBar from "./SnackBar";
 import TransactionCard from "./TransactionCard";
 import ExportCSVButton from "./ExportCSVButton";
 
 import { API } from "../providers";
-import { blueBg, blueColor } from "../utils/colors";
 
 const Transactions = ({ authedUser }) => {
   const [loading, setLoading] = useState(true);
