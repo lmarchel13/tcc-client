@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useCallback } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 import { Card, CardContent, Button, Typography, TextField, Paper } from "@material-ui/core";
@@ -40,7 +40,7 @@ const MessageCard = ({ data }) => {
   const bgColor = sender === "USER" ? "lightgray" : blueBg;
 
   return (
-    <div key={id}>
+    <div key={id} className="message-card">
       <Card
         style={{
           backgroundColor: bgColor,
@@ -60,9 +60,9 @@ const MessageCard = ({ data }) => {
 const ChatWindow = ({ authedUser, socket }) => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
-  const [conversations, setConversations] = useState([]);
+  const [conversations, setConversations] = useState({});
   const [conversationOpen, setConversationOpen] = useState({});
-  const [messagesInChat, setMessagesInChat] = useState([]);
+  const [messagesInChat, setMessagesInChat] = useState({});
 
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -70,54 +70,36 @@ const ChatWindow = ({ authedUser, socket }) => {
   const scrollDown = () => {
     const chat = document.getElementById("chat-body");
     if (chat) {
-      chat.scrollTo({ top: (messagesInChat.length / 10) * chat.clientHeight });
+      const chatSize = chat.getElementsByClassName("message-card").length;
+
+      console.log("chatSize:", chatSize);
+      chat.scrollTo({ top: Math.round(+chatSize / 10) * +chat.clientHeight });
     }
   };
 
-  const updateConversations = (id, message) => {
-    const newConvs = conversations.map((conv) => {
-      if (conv.id === id) {
-        conv.messages.push(message);
-      }
+  const updateConversations = useCallback(
+    (id, message) => {
+      if (!conversations[id]) return;
 
-      return conv;
-    });
+      const newConversationsObject = { ...conversations };
 
-    setConversations(newConvs);
-  };
+      newConversationsObject[id].updatedAt = new Date();
+      newConversationsObject[id].messages.push(message);
 
-  useEffect(() => {
-    if (socket) {
-      socket.on("NEW_MESSAGE_FROM_USER", ({ message, conversationId }) => {
-        if (conversationOpen.id === conversationId) {
-          setMessagesInChat([...messagesInChat, message]);
-          updateConversations(conversationId, message);
-          scrollDown();
-        }
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [socket, messagesInChat, conversationOpen]);
+      setConversations(newConversationsObject);
+    },
+    [conversations]
+  );
 
-  useEffect(() => {
-    const fetchConversations = async () => {
-      if (authedUser.jwt) {
-        const { err, data } = await API.getCompanyConversations(authedUser.jwt);
+  const updateMessagesInChat = useCallback(
+    async (id, message) => {
+      if (messagesInChat[id]) return;
 
-        if (err) {
-          setSnackBarData({ text: err.description, severity: "error" });
-          setOpenSnackBar(false);
-          return;
-        }
-
-        setConversations(data);
-      }
-    };
-
-    fetchConversations();
-    setLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      messagesInChat[id] = message;
+      setMessagesInChat(messagesInChat);
+    },
+    [messagesInChat]
+  );
 
   const handleMessageSend = async () => {
     const payload = {
@@ -126,7 +108,7 @@ const ChatWindow = ({ authedUser, socket }) => {
       companyId: conversationOpen.company.id,
     };
 
-    const { err, data } = await API.sendMessage(conversationOpen.id, payload, authedUser.jwt);
+    const { err, data: message } = await API.sendMessage(conversationOpen.id, payload, authedUser.jwt);
 
     if (err) {
       setSnackBarData({ text: err.description, severity: "error" });
@@ -134,18 +116,73 @@ const ChatWindow = ({ authedUser, socket }) => {
       return;
     }
 
-    setMessagesInChat([...messagesInChat, data]);
-    updateConversations(conversationOpen.id, data);
+    updateMessagesInChat(message.id, message);
+    updateConversations(conversationOpen.id, message);
     setNewMessage("");
     scrollDown();
   };
 
   const openChat = (conversation) => {
-    setConversationOpen(conversation);
+    setNewMessage("");
 
+    const messagesObj = {};
     const { messages = [] } = conversation;
-    setMessagesInChat(messages);
+
+    messages.forEach((msg) => {
+      messagesObj[msg.id] = msg;
+    });
+
+    setConversationOpen(conversation);
+    setMessagesInChat(messagesObj);
   };
+
+  const fetchConversations = async () => {
+    if (authedUser.jwt) {
+      const { err, data } = await API.getCompanyConversations(authedUser.jwt);
+
+      if (err) {
+        setSnackBarData({ text: err.description, severity: "error" });
+        setOpenSnackBar(false);
+        return;
+      }
+
+      const conversationsObj = {};
+      data.forEach((conv) => {
+        conversationsObj[conv.id] = conv;
+      });
+
+      setConversations(conversationsObj);
+    }
+  };
+
+  useEffect(() => {
+    if (socket) {
+      socket.off("NEW_MESSAGE_FROM_USER");
+      socket.off("NEW_CONVERSATION");
+
+      socket.on("NEW_MESSAGE_FROM_USER", ({ message, conversationId }) => {
+        console.log("New msg from user received:", message.id);
+        if (conversationOpen.id === conversationId) {
+          updateMessagesInChat(message.id, message).then(() => {
+            scrollDown();
+          });
+        }
+
+        if (conversations[conversationId]) {
+          updateConversations(conversationId, message);
+        } else {
+          fetchConversations();
+        }
+      });
+    }
+  }, [socket, conversationOpen, updateConversations, updateMessagesInChat]);
+
+  useEffect(() => {
+    fetchConversations().then(() => {
+      setLoading(false);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     scrollDown();
@@ -177,10 +214,12 @@ const ChatWindow = ({ authedUser, socket }) => {
                 border: `1px solid ${blueColor}`,
                 borderRight: `0.2px solid ${blueColor}`,
                 backgroundColor: "whitesmoke",
+                overflow: "auto",
               }}
             >
-              {conversations.length > 0 &&
-                conversations.map((conversation) => {
+              {Object.keys(conversations).length > 0 &&
+                Object.keys(conversations).map((convId) => {
+                  const conversation = conversations[convId];
                   const {
                     id,
                     user: { firstName },
@@ -229,9 +268,10 @@ const ChatWindow = ({ authedUser, socket }) => {
                   overflowY: "auto",
                 }}
               >
-                {messagesInChat.length > 0 &&
-                  messagesInChat.map((msg) => {
-                    return <MessageCard key={msg.id} data={msg} />;
+                {Object.keys(messagesInChat).length > 0 &&
+                  Object.keys(messagesInChat).map((msgId) => {
+                    const msg = messagesInChat[msgId];
+                    return <MessageCard key={msgId} data={msg} />;
                   })}
               </div>
               {/* Text Field */}
@@ -255,7 +295,7 @@ const ChatWindow = ({ authedUser, socket }) => {
                     fullWidth={true}
                     rowsMax={1}
                     style={{ padding: 5 }}
-                    disabled={messagesInChat.length === 0}
+                    disabled={Object.keys(messagesInChat).length === 0}
                     onKeyPress={(e) => {
                       if (e.key === "Enter") handleMessageSend();
                     }}
@@ -264,7 +304,7 @@ const ChatWindow = ({ authedUser, socket }) => {
                     variant="contained"
                     style={{ backgroundColor: blueColor, color: "white" }}
                     onClick={handleMessageSend}
-                    disabled={messagesInChat.length === 0}
+                    disabled={Object.keys(messagesInChat).length === 0}
                   >
                     Enviar
                   </Button>
