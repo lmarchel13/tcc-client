@@ -26,7 +26,9 @@ import { setAuthedUser } from "../actions/authedUser";
 import { addCategories } from "../actions/category";
 import { defineWebSocket } from "../actions/webSocket";
 
-const socket = io("http://localhost:8000");
+import config from "../config";
+
+const socket = io(config.API_BASE_URL);
 
 const App = ({ dispatch }) => {
   useEffect(() => {

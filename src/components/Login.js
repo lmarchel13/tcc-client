@@ -3,11 +3,17 @@ import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { Paper, Button, TextField, Divider } from "@material-ui/core";
 import { GoogleLogin } from "react-google-login";
+import { io } from "socket.io-client";
 
 import SnackBar from "./SnackBar";
 import { blueBg, blueColor } from "../utils/colors";
 import { API, Cache } from "../providers";
 import { setAuthedUser } from "../actions/authedUser";
+
+import config from "../config";
+import { defineWebSocket } from "../actions/webSocket";
+
+const socket = io(config.API_BASE_URL);
 
 const Login = ({ dispatch }) => {
   const [email, setEmail] = useState("");
@@ -40,7 +46,9 @@ const Login = ({ dispatch }) => {
       Cache.setUserId(userId);
       Cache.setUserCompanies(userCompanies);
 
+      socket.emit("join", userId);
       dispatch(setAuthedUser({ userId, jwt, userCompanies }));
+      dispatch(defineWebSocket(socket));
 
       history.push("/");
     }
