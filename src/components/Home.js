@@ -34,7 +34,7 @@ const Home = () => {
             color: blueColor,
           }}
         >
-          Seja bem-vindo ao <strong>Servicify</strong>!<br></br>
+          Seja bem-vindo ao <strong>Servicefy</strong>!<br></br>
           <br></br>Sua plataforma de anúncio e busca de serviços.
         </span>
       </Paper>
