@@ -30,7 +30,8 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "yarn build && yarn server",
+    "postinstall": "yarn build",
+    "start": "yarn server",
     "server": "node server/index.js",
     "dev": "react-scripts start",
     "build": "react-scripts build",
