@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -11,6 +12,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import StorageIcon from "@material-ui/icons/Storage";
 import HistoryIcon from "@material-ui/icons/History";
 import AssessmentIcon from "@material-ui/icons/Assessment";
+import { Fragment } from "react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -20,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ProfileMenuList = ({ tabs, setTab, style = {} }) => {
+const ProfileMenuList = ({ companies, tabs, setTab, style = {} }) => {
   const classes = useStyles();
 
   return (
@@ -44,22 +46,30 @@ const ProfileMenuList = ({ tabs, setTab, style = {} }) => {
           </ListItemIcon>
           <ListItemText primary="Histórico" />
         </ListItem>
-        <ListItem button onClick={() => setTab(tabs.REPORTS)}>
-          <ListItemIcon>
-            <AssessmentIcon />
-          </ListItemIcon>
-          <ListItemText primary="Relatórios" />
-        </ListItem>
-        <ListItem button onClick={() => setTab(tabs.MESSAGES)}>
-          <ListItemIcon>
-            <InboxIcon />
-          </ListItemIcon>
-          <ListItemText primary="Mensagens" />
-        </ListItem>
+        {companies && companies.length > 0 && (
+          <Fragment>
+            <ListItem button onClick={() => setTab(tabs.REPORTS)}>
+              <ListItemIcon>
+                <AssessmentIcon />
+              </ListItemIcon>
+              <ListItemText primary="Relatórios" />
+            </ListItem>
+            <ListItem button onClick={() => setTab(tabs.MESSAGES)}>
+              <ListItemIcon>
+                <InboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Mensagens" />
+            </ListItem>
+          </Fragment>
+        )}
       </List>
       <Divider />
     </div>
   );
 };
 
-export default ProfileMenuList;
+const mapStateToProps = ({ companies }) => {
+  return { companies };
+};
+
+export default connect(mapStateToProps)(ProfileMenuList);

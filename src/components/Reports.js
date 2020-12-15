@@ -16,14 +16,9 @@ const REPORT_TABS = {
   PER_CATEGORY: "PER_CATEGORY",
 };
 
-const DEFAULT_DATA = [
-  { label: "Janeiro", value: 100 },
-  { label: "Fevereiro", value: 200 },
-];
-
-const Reports = ({ authedUser }) => {
+const Reports = ({ authedUser, companies }) => {
   const [reportTab, setReportTab] = useState(REPORT_TABS.LAST_YEAR);
-  const [reportData, setReportData] = useState(DEFAULT_DATA);
+  const [reportData, setReportData] = useState([]);
 
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
@@ -46,8 +41,10 @@ const Reports = ({ authedUser }) => {
       return data;
     };
 
-    fetchReport().then((res) => setReportData(res));
-  }, [authedUser, reportTab]);
+    if (companies.length) {
+      fetchReport().then((res) => setReportData(res));
+    }
+  }, [companies, authedUser, reportTab]);
 
   const isActive = (activeTab) => {
     return activeTab === reportTab ? blueColor : blueBg;
@@ -117,8 +114,8 @@ const Reports = ({ authedUser }) => {
   );
 };
 
-const mapStateToProps = ({ authedUser }) => {
-  return { authedUser };
+const mapStateToProps = ({ authedUser, companies }) => {
+  return { authedUser, companies };
 };
 
 export default connect(mapStateToProps)(Reports);

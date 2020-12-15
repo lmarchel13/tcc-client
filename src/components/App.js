@@ -30,21 +30,23 @@ const socket = io("http://localhost:8000");
 
 const App = ({ dispatch }) => {
   useEffect(() => {
-    const payload = {
-      jwt: Cache.getToken(),
-      userId: Cache.getUserId(),
-    };
-
-    socket.emit("join", payload.userId);
-
     const fetchCategories = async () => {
       const { data = [] } = await API.getCategories();
       dispatch(addCategories(data));
     };
 
-    dispatch(defineWebSocket(socket));
-    dispatch(setAuthedUser(payload));
+    const payload = {
+      jwt: Cache.getToken(),
+      userId: Cache.getUserId(),
+    };
 
+    if (payload.userId && payload.jwt) {
+      socket.emit("join", payload.userId);
+
+      dispatch(setAuthedUser(payload));
+    }
+
+    dispatch(defineWebSocket(socket));
     fetchCategories();
   }, [dispatch]);
 
