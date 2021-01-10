@@ -74,7 +74,8 @@ const Login = ({ dispatch }) => {
   };
 
   const onFailure = (err) => {
-    console.error("Error:", err);
+    console.error("onFailure error:", err);
+    
     setSnackBarData({ text: "Credenciais inválidas", severity: "error" });
     setOpenSnackBar(true);
   };

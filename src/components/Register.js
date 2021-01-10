@@ -90,7 +90,9 @@ const Register = () => {
     }
   };
 
-  const onFailure = (event) => {
+  const onFailure = (err) => {
+    console.error("onFailure error:", err);
+    
     setSnackBarData({
       text: "Não foi possível logar com seu email do Google. Por favor, tente novamente",
       severity: "error",
