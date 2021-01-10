@@ -188,129 +188,151 @@ const ChatWindow = ({ authedUser, socket }) => {
   return (
     <Fragment>
       <Title title="Minhas mensagens" />
-      {!loading && (
-        <div style={{ display: "flex", flex: 1 }}>
+      <Fragment>
+        {!loading && Object.keys(conversations).length > 0 && (
+          <div style={{ display: "flex", flex: 1 }}>
+            <Paper
+              elevation={12}
+              style={{
+                margin: "0 auto",
+                display: "flex",
+                width: "100%",
+                minHeight: 600,
+                maxHeight: 80,
+                minWidth: 800,
+                maxWidth: 1000,
+                marginTop: 64,
+                flexDirection: "row",
+              }}
+            >
+              {/* Usuarios */}
+              <div
+                style={{
+                  flex: 3,
+                  border: `1px solid ${blueColor}`,
+                  borderRight: `0.2px solid ${blueColor}`,
+                  backgroundColor: "whitesmoke",
+                  overflow: "auto",
+                }}
+              >
+                {Object.keys(conversations).length > 0 &&
+                  Object.keys(conversations).map((convId) => {
+                    const conversation = conversations[convId];
+                    const {
+                      id,
+                      user: { firstName },
+                      messages = [],
+                    } = conversation;
+
+                    if (messages.length === 0) return null;
+
+                    const format = "DD/MM/YYYY HH:mm";
+                    const { text: lastMessage, createdAt: timestamp } = messages[messages.length - 1];
+
+                    return (
+                      <UserCard
+                        key={id}
+                        name={firstName}
+                        timestamp={moment(timestamp).format(format)}
+                        lastMessage={lastMessage}
+                        onClick={() => {
+                          openChat(conversation);
+                        }}
+                      />
+                    );
+                  })}
+              </div>
+              {/* Chat */}
+              <div
+                style={{
+                  display: "flex",
+                  flex: 7,
+                  border: `1px solid ${blueColor}`,
+                  borderLeft: `0.2px solid ${blueColor}`,
+                  flexDirection: "column",
+                  maxWidth: 700,
+                }}
+              >
+                {/* Body */}
+                <div
+                  id="chat-body"
+                  style={{
+                    flex: 10,
+                    width: "100%",
+                    backgroundColor: "whitesmoke",
+                    alignSelf: "flex-start",
+                    display: "flex",
+                    flexDirection: "column",
+                    overflowY: "auto",
+                  }}
+                >
+                  {Object.keys(messagesInChat).length > 0 &&
+                    Object.keys(messagesInChat).map((msgId) => {
+                      const msg = messagesInChat[msgId];
+                      return <MessageCard key={msgId} data={msg} />;
+                    })}
+                </div>
+                {/* Text Field */}
+                {Object.keys(conversationOpen).length > 0 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      flex: 1,
+                      backgroundColor: "lightblue",
+                      width: "100%",
+                      alignSelf: "flex-end",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <TextField
+                      className="send-message-text-field"
+                      placeholder="Enviar uma mensagem..."
+                      variant="outlined"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      fullWidth={true}
+                      rowsMax={1}
+                      style={{ padding: 5 }}
+                      disabled={Object.keys(messagesInChat).length === 0}
+                      onKeyPress={(e) => {
+                        if (e.key === "Enter") handleMessageSend();
+                      }}
+                    />
+                    <Button
+                      variant="contained"
+                      style={{ backgroundColor: blueColor, color: "white" }}
+                      onClick={handleMessageSend}
+                      disabled={Object.keys(messagesInChat).length === 0}
+                    >
+                      Enviar
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </Paper>
+          </div>
+        )}
+      </Fragment>
+      <Fragment>
+        {!loading && Object.keys(conversations).length === 0 && (
           <Paper
-            elevation={12}
+            elevation={3}
             style={{
               margin: "0 auto",
               display: "flex",
-              width: "100%",
-              minHeight: 600,
-              maxHeight: 80,
-              minWidth: 800,
-              maxWidth: 1000,
+              width: "70%",
+              height: 50,
               marginTop: 64,
-              flexDirection: "row",
+              padding: 64,
+              flexDirection: "column",
             }}
           >
-            {/* Usuarios */}
-            <div
-              style={{
-                flex: 3,
-                border: `1px solid ${blueColor}`,
-                borderRight: `0.2px solid ${blueColor}`,
-                backgroundColor: "whitesmoke",
-                overflow: "auto",
-              }}
-            >
-              {Object.keys(conversations).length > 0 &&
-                Object.keys(conversations).map((convId) => {
-                  const conversation = conversations[convId];
-                  const {
-                    id,
-                    user: { firstName },
-                    messages = [],
-                  } = conversation;
-
-                  if (messages.length === 0) return null;
-
-                  const format = "DD/MM/YYYY HH:mm";
-                  const { text: lastMessage, createdAt: timestamp } = messages[messages.length - 1];
-
-                  return (
-                    <UserCard
-                      key={id}
-                      name={firstName}
-                      timestamp={moment(timestamp).format(format)}
-                      lastMessage={lastMessage}
-                      onClick={() => {
-                        openChat(conversation);
-                      }}
-                    />
-                  );
-                })}
-            </div>
-            {/* Chat */}
-            <div
-              style={{
-                display: "flex",
-                flex: 7,
-                border: `1px solid ${blueColor}`,
-                borderLeft: `0.2px solid ${blueColor}`,
-                flexDirection: "column",
-                maxWidth: 700,
-              }}
-            >
-              {/* Body */}
-              <div
-                id="chat-body"
-                style={{
-                  flex: 10,
-                  width: "100%",
-                  backgroundColor: "whitesmoke",
-                  alignSelf: "flex-start",
-                  display: "flex",
-                  flexDirection: "column",
-                  overflowY: "auto",
-                }}
-              >
-                {Object.keys(messagesInChat).length > 0 &&
-                  Object.keys(messagesInChat).map((msgId) => {
-                    const msg = messagesInChat[msgId];
-                    return <MessageCard key={msgId} data={msg} />;
-                  })}
-              </div>
-              {/* Text Field */}
-              {Object.keys(conversationOpen).length > 0 && (
-                <div
-                  style={{
-                    display: "flex",
-                    flex: 1,
-                    backgroundColor: "lightblue",
-                    width: "100%",
-                    alignSelf: "flex-end",
-                    flexDirection: "row",
-                  }}
-                >
-                  <TextField
-                    className="send-message-text-field"
-                    placeholder="Enviar uma mensagem..."
-                    variant="outlined"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    fullWidth={true}
-                    rowsMax={1}
-                    style={{ padding: 5 }}
-                    disabled={Object.keys(messagesInChat).length === 0}
-                    onKeyPress={(e) => {
-                      if (e.key === "Enter") handleMessageSend();
-                    }}
-                  />
-                  <Button
-                    variant="contained"
-                    style={{ backgroundColor: blueColor, color: "white" }}
-                    onClick={handleMessageSend}
-                    disabled={Object.keys(messagesInChat).length === 0}
-                  >
-                    Enviar
-                  </Button>
-                </div>
-              )}
-            </div>
+            <span style={{ width: "100%", margin: "0 auto", textAlign: "center", fontSize: 24 }}>
+              Não há mensagens para suas empresas
+            </span>
           </Paper>
-        </div>
-      )}
+        )}
+      </Fragment>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
     </Fragment>
   );
