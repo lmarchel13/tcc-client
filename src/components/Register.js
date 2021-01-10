@@ -48,6 +48,7 @@ const Register = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     resetSnackBarState();
+
     if (!formIsValid) return;
 
     const payload = { firstName, lastName, email, password };
@@ -89,7 +90,7 @@ const Register = () => {
     }
   };
 
-  const onFailure = (e) => {
+  const onFailure = (event) => {
     setSnackBarData({
       text: "Não foi possível logar com seu email do Google. Por favor, tente novamente",
       severity: "error",
@@ -175,10 +176,9 @@ const Register = () => {
                 <GoogleLogin
                   clientId="527214406910-5rkm3vv611cftn5o8969539m3dreg6t6.apps.googleusercontent.com"
                   buttonText="Registre-se com o Google"
-                  onSuccess={onSuccess}
-                  onFailure={onFailure}
-                  cookiePolicy={"single_host_origin"}
-                  // isSignedIn={true}
+                  onSuccess={(res) => onSuccess(res)}
+                  onFailure={(e) => onFailure(e)}
+                  cookiePolicy={"single_host_origin"}                  
                 />
               </div>
             </div>

@@ -135,8 +135,7 @@ const Login = ({ dispatch }) => {
                   buttonText="Entre com o Google"
                   onSuccess={(response) => onSuccess(response)}
                   onFailure={(err) => onFailure(err)}
-                  cookiePolicy={"single_host_origin"}
-                  // isSignedIn={true}
+                  cookiePolicy={"single_host_origin"}                  
                 />
               </div>
             </div>
