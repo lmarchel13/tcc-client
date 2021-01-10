@@ -10,6 +10,7 @@ import SnackBar from "./SnackBar";
 
 import { blueBg, blueColor } from "../utils/colors";
 import { API } from "../providers";
+import config from '../config'
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -92,7 +93,7 @@ const Register = () => {
 
   const onFailure = (err) => {
     console.error("onFailure error:", err);
-    
+
     setSnackBarData({
       text: "Não foi possível logar com seu email do Google. Por favor, tente novamente",
       severity: "error",
@@ -176,7 +177,7 @@ const Register = () => {
             >
               <div style={{ display: "flex", marginBottom: 32, margin: "0 auto" }}>
                 <GoogleLogin
-                  clientId="527214406910-5rkm3vv611cftn5o8969539m3dreg6t6.apps.googleusercontent.com"
+                  clientId={config.GOOGLE_CLIENT_ID}
                   buttonText="Registre-se com o Google"
                   onSuccess={(res) => onSuccess(res)}
                   onFailure={(e) => onFailure(e)}

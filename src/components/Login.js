@@ -75,7 +75,6 @@ const Login = ({ dispatch }) => {
 
   const onFailure = (err) => {
     console.error("onFailure error:", err);
-    
     setSnackBarData({ text: "Credenciais inválidas", severity: "error" });
     setOpenSnackBar(true);
   };
@@ -132,7 +131,8 @@ const Login = ({ dispatch }) => {
             >
               <div style={{ display: "flex", marginBottom: 32, margin: "0 auto" }}>
                 <GoogleLogin
-                  clientId="527214406910-5rkm3vv611cftn5o8969539m3dreg6t6.apps.googleusercontent.com"
+                  // clientId="527214406910-5rkm3vv611cftn5o8969539m3dreg6t6.apps.googleusercontent.com"
+                  clientId={config.GOOGLE_CLIENT_ID}
                   buttonText="Entre com o Google"
                   onSuccess={(response) => onSuccess(response)}
                   onFailure={(err) => onFailure(err)}
