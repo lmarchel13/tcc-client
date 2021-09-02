@@ -370,10 +370,10 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
                       }}
                     >
                       <div style={{ flex: 1, alignSelf: "center" }}>
-                        <span style={{ fontSize: 28, fontWeight: "bold" }}>{name}</span>
+                        <span style={{ fontSize: "1vw", fontWeight: "bold" }}>{name}</span>
                       </div>
                       <div style={{ flex: 1, marginTop: 8 }}>
-                        <span style={{ fontSize: 18 }}>
+                        <span style={{ fontSize: "1w" }}>
                           {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)}
                         </span>
                       </div>

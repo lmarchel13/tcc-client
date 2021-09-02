@@ -182,7 +182,7 @@ const Profile = ({ authedUser, dispatch, companies = [] }) => {
                   flexDirection: "column",
                 }}
               >
-                <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: 24 }}>
+                <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: "2vw" }}>
                   Nenhuma empresa encontrada. Adicione sua primeira empresa clicando no botão adicionar logo abaixo.
                 </span>
               </Paper>

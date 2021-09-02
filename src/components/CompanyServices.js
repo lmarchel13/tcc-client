@@ -76,7 +76,7 @@ const CompanyServices = ({ authedUser }) => {
             flexDirection: "column",
           }}
         >
-          <span style={{ width: "100%", margin: "0 auto", textAlign: "center", fontSize: 24 }}>
+          <span style={{ width: "100%", margin: "0 auto", textAlign: "center", fontSize: "2vw" }}>
             Está empresa não possui serviços cadastrados.
           </span>
         </Paper>

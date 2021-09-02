@@ -12,6 +12,7 @@ import { API } from "../providers";
 const REPORT_TABS = {
   LAST_YEAR: "LAST_YEAR",
   LAST_6M: "LAST_6M",
+  LAST_1M: "LAST_1M",
   PER_COMPANY: "PER_COMPANY",
   PER_CATEGORY: "PER_CATEGORY",
 };
@@ -22,6 +23,7 @@ const Reports = ({ authedUser, companies }) => {
 
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [firstLoaded, setFirstLoaded] = useState(false);
 
   const resetSnackBarState = () => {
     setOpenSnackBar(false);
@@ -42,7 +44,10 @@ const Reports = ({ authedUser, companies }) => {
     };
 
     if (companies.length) {
-      fetchReport().then((res) => setReportData(res));
+      fetchReport().then((res) => {
+        setReportData(res);
+        setFirstLoaded(true);
+      });
     }
   }, [companies, authedUser, reportTab]);
 
@@ -57,14 +62,19 @@ const Reports = ({ authedUser, companies }) => {
       <div>
         <div style={{ display: "flex", marginTop: 32, marginBottom: 32, justifyContent: "center" }}>
           <Tab
-            label="Últimos 12 meses"
-            onClick={() => setReportTab(REPORT_TABS.LAST_YEAR)}
-            style={{ color: isActive(REPORT_TABS.LAST_YEAR) }}
+            label="Último mês"
+            onClick={() => setReportTab(REPORT_TABS.LAST_1M)}
+            style={{ color: isActive(REPORT_TABS.LAST_1M) }}
           />
           <Tab
             label="Últimos 6 meses"
             onClick={() => setReportTab(REPORT_TABS.LAST_6M)}
             style={{ color: isActive(REPORT_TABS.LAST_6M) }}
+          />
+          <Tab
+            label="Últimos 12 meses"
+            onClick={() => setReportTab(REPORT_TABS.LAST_YEAR)}
+            style={{ color: isActive(REPORT_TABS.LAST_YEAR) }}
           />
           <Tab
             label="Por empresa"
@@ -78,35 +88,39 @@ const Reports = ({ authedUser, companies }) => {
           />
         </div>
         <div style={{ display: "flex", justifyContent: "center" }}>
-          {reportData.length === 0 ? (
-            <Paper
-              elevation={3}
-              style={{
-                margin: "0 auto",
-                display: "flex",
-                width: "40%",
-                height: "300",
-                marginTop: 64,
-                padding: 32,
-                flexDirection: "column",
-              }}
-            >
-              <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: 24, fontFamily: "Futura" }}>
-                Nenhum relatório encontrado nessa categoria
-              </span>
-            </Paper>
-          ) : (
-            <Fragment>
-              <Paper elevation={3} style={{ padding: 64 }}>
-                <BarChart width={700} height={400} data={reportData} maxBarSize={10} barSize={10}>
-                  <XAxis padding={{ left: 20, right: 100 }} type="category" dataKey="label" />
-                  <YAxis type="number" dataKey="value" scale="quantile" />
-                  <CartesianGrid horizontal={false} />
-                  <Bar dataKey="value" fill={blueColor} />
-                </BarChart>
+          {firstLoaded ? (
+            reportData.length === 0 ? (
+              <Paper
+                elevation={3}
+                style={{
+                  margin: "0 auto",
+                  display: "flex",
+                  width: "40%",
+                  height: "300",
+                  marginTop: 64,
+                  padding: 32,
+                  flexDirection: "column",
+                }}
+              >
+                <span
+                  style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: "2vw", fontFamily: "Futura" }}
+                >
+                  Nenhum relatório encontrado nessa categoria
+                </span>
               </Paper>
-            </Fragment>
-          )}
+            ) : (
+              <Fragment>
+                <Paper elevation={3} style={{ padding: 64 }}>
+                  <BarChart width={700} height={400} data={reportData} maxBarSize={10} barSize={10}>
+                    <XAxis padding={{ left: 20, right: 100 }} type="category" dataKey="label" />
+                    <YAxis type="number" dataKey="value" scale="quantile" />
+                    <CartesianGrid horizontal={false} />
+                    <Bar dataKey="value" fill={blueColor} />
+                  </BarChart>
+                </Paper>
+              </Fragment>
+            )
+          ) : null}
         </div>
       </div>
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />

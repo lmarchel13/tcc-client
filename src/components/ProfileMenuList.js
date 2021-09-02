@@ -32,7 +32,7 @@ const ProfileMenuList = ({ companies, tabs, setTab, style = {} }) => {
           <ListItemIcon>
             <PersonIcon />
           </ListItemIcon>
-          <ListItemText primary="Editar" />
+          <ListItemText primary="Meus dados" />
         </ListItem>
         <ListItem button onClick={() => setTab(tabs.COMPANIES)}>
           <ListItemIcon>

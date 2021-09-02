@@ -44,7 +44,7 @@ const Services = () => {
               flexDirection: "column",
             }}
           >
-            <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: 24 }}>
+            <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: "2vw" }}>
               Nenhum serviço encontrado para essa categoria.
             </span>
           </Paper>

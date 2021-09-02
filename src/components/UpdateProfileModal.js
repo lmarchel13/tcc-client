@@ -23,7 +23,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DEFAULT_PASSWORD = "**************";
+// const DEFAULT_PASSWORD = "**************";
+const DEFAULT_PASSWORD = "";
 
 const UpdateProfileModal = ({ open, setOpen, user, authedUser }) => {
   const [firstName, setFirstName] = useState("");
@@ -46,11 +47,11 @@ const UpdateProfileModal = ({ open, setOpen, user, authedUser }) => {
 
   const onSubmit = async () => {
     try {
-      if (!firstName || !lastName || !email || !password) throw new Error("Preencha todos os dados");
+      if (!firstName || !lastName || !email) throw new Error("Preencha todos os dados");
 
       const payload = { firstName, lastName, email };
 
-      if (password !== DEFAULT_PASSWORD && password !== "") payload.password = password;
+      if (password !== DEFAULT_PASSWORD) payload.password = password;
 
       const { err } = await API.updateUser(payload, authedUser.jwt);
 
@@ -68,6 +69,8 @@ const UpdateProfileModal = ({ open, setOpen, user, authedUser }) => {
       setSnackBarData({ text: error.message, severity: "error" });
       setOpenSnackBar(true);
     }
+
+    setPassword(DEFAULT_PASSWORD);
   };
 
   useEffect(() => {

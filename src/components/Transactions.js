@@ -38,7 +38,7 @@ const Transactions = ({ authedUser }) => {
       return data;
     };
 
-    fetchTransactions().then(({ buyer, seller }) => {
+    fetchTransactions().then(({ buyer = [], seller = [] } = {}) => {
       setBuyerTransactions(buyer);
       setSellerTransactions(seller);
 
@@ -141,7 +141,7 @@ const Transactions = ({ authedUser }) => {
                   margin: "0 auto",
                 }}
               >
-                {buyerTransactions.length > 0 && (
+                {buyerTransactions && buyerTransactions.length > 0 && (
                   <ExportCSVButton
                     onClick={() => {
                       handleExport("buyer").then((data) => {
@@ -180,7 +180,7 @@ const Transactions = ({ authedUser }) => {
                         flexDirection: "column",
                       }}
                     >
-                      <span style={{ width: "100%", margin: "0 auto", textAlign: "center", fontSize: 24 }}>
+                      <span style={{ width: "100%", margin: "0 auto", textAlign: "center", fontSize: "1vw" }}>
                         Sem histórico de compras
                       </span>
                     </Paper>
@@ -191,7 +191,7 @@ const Transactions = ({ authedUser }) => {
             <Divider style={{ width: "100%" }} />
             <div style={{ width: "100%", display: "flex", marginTop: 64 }}>
               <div style={{ display: "flex", flexDirection: "column", width: "100%", margin: "0 auto" }}>
-                {sellerTransactions.length > 0 && (
+                {sellerTransactions && sellerTransactions.length > 0 && (
                   <ExportCSVButton
                     onClick={() => {
                       handleExport("seller").then((data) => {
@@ -238,7 +238,7 @@ const Transactions = ({ authedUser }) => {
                         flexDirection: "column",
                       }}
                     >
-                      <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: 24 }}>
+                      <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: "1vw" }}>
                         Sem histórico de vendas
                       </span>
                     </Paper>

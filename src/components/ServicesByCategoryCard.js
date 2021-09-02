@@ -50,7 +50,8 @@ const ServicesByCategoryCard = ({ service }) => {
       style={{
         display: "flex",
         flex: 1,
-        minWidth: 350,
+        width: "30vw",
+        heigth: "30vw",
         maxWidth: 350,
         maxHeight: 300,
         padding: 32,

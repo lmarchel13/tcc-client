@@ -69,8 +69,7 @@ const TransactionCard = ({ data, token, type } = {}) => {
       <Paper
         elevation={3}
         style={{
-          minWidth: 375,
-          maxWidth: 375,
+          maxWidth: 450,
           height: 100,
           padding: 32,
           margin: 8,
@@ -92,6 +91,7 @@ const TransactionCard = ({ data, token, type } = {}) => {
                 if (type !== "seller") return;
                 history.push(`/companies/${sellerId}/services`, { data: data.seller });
               }}
+              noWrap={true}
             >
               <i>
                 <strong>{type === "seller" ? `${firstName} ${lastName}` : sellerName}</strong>
@@ -101,6 +101,7 @@ const TransactionCard = ({ data, token, type } = {}) => {
               variant="body2"
               component="p"
               style={{ marginBottom: 16, textAlign: "center", color: blueColor, fontFamily: "Futura" }}
+              noWrap={true}
             >
               <i>Serviço: {serviceName}</i>
             </Typography>
@@ -108,6 +109,7 @@ const TransactionCard = ({ data, token, type } = {}) => {
               variant="body2"
               component="p"
               style={{ marginBottom: 16, textAlign: "center", color: blueColor, fontFamily: "Futura" }}
+              noWrap={true}
             >
               <i>
                 Data: {day} às {time}
@@ -132,14 +134,14 @@ const TransactionCard = ({ data, token, type } = {}) => {
                 marginBottom: 16,
                 textAlign: "center",
                 alignSelf: "center",
-                fontSize: 24,
+                fontSize: "1vw",
                 color: blueColor,
                 fontFamily: "Futura",
               }}
             >
               {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)}
             </Typography>
-            {type !== "seller" && (
+            {type !== "seller" && new Date(day) < new Date() && (
               <Button
                 style={{
                   position: "absolute",
@@ -147,7 +149,7 @@ const TransactionCard = ({ data, token, type } = {}) => {
                   right: -25,
                   color: blueColor,
                   fontFamily: "Futura",
-                  fontSize: 10,
+                  fontSize: "0.35vw",
                 }}
                 onClick={() => setOpenConfirmModal(true)}
               >

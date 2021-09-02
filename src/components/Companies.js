@@ -101,7 +101,7 @@ const Companies = ({ searchBarEnabled = true, homeScreen = false }) => {
             flexDirection: "column",
           }}
         >
-          <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: 24, fontFamily: "Futura" }}>
+          <span style={{ width: "80%", margin: "0 auto", textAlign: "center", fontSize: "2vw", fontFamily: "Futura" }}>
             Nenhuma empresa encontrada.
           </span>
         </Paper>

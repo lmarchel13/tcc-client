@@ -44,7 +44,7 @@ const DayOffers = ({ categories, homeScreen = false }) => {
 
   useEffect(() => {
     const fetchDayOffers = async () => {
-      const limit = homeScreen ? 50 : 20;
+      const limit = 24;
       const offset = 0;
       const { data = [], err } = await API.getDayOffers({ limit, offset });
 
@@ -53,6 +53,8 @@ const DayOffers = ({ categories, homeScreen = false }) => {
         setSnackBarData({ text: err.description, severity: "error" });
         setOpenSnackBar(true);
       }
+
+      console.log("offers data size:", data.length);
 
       return data;
     };

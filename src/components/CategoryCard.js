@@ -64,19 +64,23 @@ const CategoryCard = ({ data: { id, name, icon } } = {}) => {
       onClick={() => onClick(id)}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
-      style={{ border: isHover ? `0.6px solid ${blueColor}` : "0.6px solid transparent" }}
+      style={{
+        border: isHover ? `0.6px solid ${blueColor}` : "0.6px solid transparent",
+        justifyContent: "center",
+      }}
     >
       <div style={{ display: "flex", flex: 1, justifyContent: "center" }}>
         <IconComponent
           style={{
             color: blueColor,
-            fontSize: 90,
+            fontSize: "3vw",
             alignSelf: "center",
+            marginTop: 12,
           }}
         />
       </div>
       <div style={{ display: "flex", flex: 1, margin: "0 auto" }}>
-        <span style={{ fontSize: 24, marginTop: 12, color: blueColor }}>{name}</span>
+        <span style={{ fontSize: "1vw", marginTop: 12, color: blueColor }}>{name}</span>
       </div>
     </div>
   );

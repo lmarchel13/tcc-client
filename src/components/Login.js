@@ -131,12 +131,12 @@ const Login = ({ dispatch }) => {
             >
               <div style={{ display: "flex", marginBottom: 32, margin: "0 auto" }}>
                 <GoogleLogin
-                  // clientId="527214406910-5rkm3vv611cftn5o8969539m3dreg6t6.apps.googleusercontent.com"
-                  clientId={config.GOOGLE_CLIENT_ID}
+                  clientId="527214406910-5rkm3vv611cftn5o8969539m3dreg6t6.apps.googleusercontent.com"
+                  // clientId={config.GOOGLE_CLIENT_ID}
                   buttonText="Entre com o Google"
                   onSuccess={(response) => onSuccess(response)}
                   onFailure={(err) => onFailure(err)}
-                  cookiePolicy={"single_host_origin"}                  
+                  cookiePolicy={"single_host_origin"}
                 />
               </div>
             </div>

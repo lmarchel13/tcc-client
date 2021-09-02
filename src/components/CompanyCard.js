@@ -84,27 +84,35 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
   };
 
   return (
-    <Fragment>
+    <div>
       <Card
         style={{
-          minWidth: 500,
-          maxWidth: 500,
+          display: "flex",
+          flex: 1,
+          width: editable ? "70vw" : "30vw",
+          heigth: "30vw",
+          maxWidth: editable ? 700 : 350,
+          padding: 32,
           margin: 16,
+          flexDirection: "column",
         }}
         raised={true}
         elevation={3}
       >
-        <CardContent>
+        <CardContent style={{ display: "flex", flexDirection: "column" }}>
           {editable && (
-            <DeleteIcon
-              style={{ float: "right", fontSize: 18, color: blueColor }}
-              onClick={() => setOpenConfirmModal(true)}
-            />
+            <div>
+              <DeleteIcon
+                style={{ float: "right", fontSize: "1vw", color: blueColor, cursor: "pointer" }}
+                onClick={() => setOpenConfirmModal(true)}
+              />
+            </div>
           )}
           <Typography
             variant="h5"
             component="h2"
             style={{ textAlign: "center", color: blueColor, marginBottom: 16, fontFamily: "Futura" }}
+            noWrap={true}
           >
             {name}
           </Typography>
@@ -113,6 +121,7 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
               variant="body2"
               component="p"
               style={{ marginBottom: 8, marginLeft: 8, textAlign: "center", fontFamily: "Futura" }}
+              noWrap={true}
             >
               <strong>{documentType}:</strong> {document}
             </Typography>
@@ -153,7 +162,7 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
             </Typography>
           )}
         </CardContent>
-        <CardActions style={{ float: "right" }}>
+        <CardActions style={{ float: "right", justifyContent: "center" }}>
           <Button size="small">
             <Link
               style={{ textDecoration: "none", color: blueColor, fontFamily: "Futura" }}
@@ -182,7 +191,7 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
           </Fragment>
         )}
       </Card>
-    </Fragment>
+    </div>
   );
 };
 

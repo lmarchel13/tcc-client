@@ -6,8 +6,6 @@ import "./styles/scrollbar.css";
 import DayOffers from "./DayOffers";
 
 import { blueColor } from "../utils/colors";
-import Companies from "./Companies";
-import Title from "./Title";
 
 const Home = () => {
   return (
@@ -30,7 +28,7 @@ const Home = () => {
             width: "100%",
             margin: "0 auto",
             textAlign: "center",
-            fontSize: 24,
+            fontSize: "1.5vw",
             color: blueColor,
           }}
         >
@@ -39,30 +37,8 @@ const Home = () => {
         </span>
       </Paper>
 
-      <Title title="Ofertas do dia" />
-      <div
-        className="scrollbar"
-        style={{
-          margin: "0 auto",
-          width: "100%",
-          overflowX: "auto",
-          display: "grid",
-        }}
-      >
-        <DayOffers homeScreen={true} />
-      </div>
-
-      <Title title="Empresas" />
-      <div
-        className="scrollbar"
-        style={{
-          margin: "0 auto",
-          width: "100%",
-          overflowX: "auto",
-          display: "grid",
-        }}
-      >
-        <Companies homeScreen={true} searchBarEnabled={false} />
+      <div>
+        <DayOffers></DayOffers>
       </div>
     </Fragment>
   );

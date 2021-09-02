@@ -327,7 +327,7 @@ const ChatWindow = ({ authedUser, socket }) => {
               flexDirection: "column",
             }}
           >
-            <span style={{ width: "100%", margin: "0 auto", textAlign: "center", fontSize: 24 }}>
+            <span style={{ width: "100%", margin: "0 auto", textAlign: "center", fontSize: "2vw" }}>
               Não há mensagens para suas empresas
             </span>
           </Paper>
