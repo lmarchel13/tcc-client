@@ -12,7 +12,7 @@ import { API } from "../providers";
 const REPORT_TABS = {
   LAST_YEAR: "LAST_YEAR",
   LAST_6M: "LAST_6M",
-  LAST_1M: "LAST_1M",
+  LAST_3M: "LAST_3M",
   PER_COMPANY: "PER_COMPANY",
   PER_CATEGORY: "PER_CATEGORY",
 };
@@ -62,9 +62,9 @@ const Reports = ({ authedUser, companies }) => {
       <div>
         <div style={{ display: "flex", marginTop: 32, marginBottom: 32, justifyContent: "center" }}>
           <Tab
-            label="Último mês"
-            onClick={() => setReportTab(REPORT_TABS.LAST_1M)}
-            style={{ color: isActive(REPORT_TABS.LAST_1M) }}
+            label="Últimos 3 meses"
+            onClick={() => setReportTab(REPORT_TABS.LAST_3M)}
+            style={{ color: isActive(REPORT_TABS.LAST_3M) }}
           />
           <Tab
             label="Últimos 6 meses"

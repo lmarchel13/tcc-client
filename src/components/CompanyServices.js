@@ -36,7 +36,7 @@ const CompanyServices = ({ authedUser }) => {
 
     const foundCompany = companies.find((company) => company.id === id);
 
-    return foundCompany ? true : false;
+    return !!foundCompany;
   };
 
   useEffect(() => {
@@ -61,7 +61,6 @@ const CompanyServices = ({ authedUser }) => {
       <Fragment>
         <Title title={company.name} />
       </Fragment>
-      {/* <h1 style={{ width: "100%", textAlign: "center", marginTop: 24 }}>{company.name}</h1> */}
 
       {!loading && services.length === 0 ? (
         <Paper

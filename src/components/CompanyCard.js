@@ -80,7 +80,7 @@ const CompanyCard = ({ data, dispatch, editable = true }) => {
       Cache.removeUserCompany(id);
     }
 
-    return setOpenUpdateModal(false);
+    return setOpenConfirmModal(false);
   };
 
   return (

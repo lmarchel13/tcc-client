@@ -10,7 +10,7 @@ import SnackBar from "./SnackBar";
 import { blueColor } from "../utils/colors";
 import { API } from "../providers";
 
-const TransactionCard = ({ data, token, type } = {}) => {
+const TransactionCard = ({ data, token, type: txType, onCancelCallback } = {}) => {
   const history = useHistory();
 
   const [openConfirmModal, setOpenConfirmModal] = useState(false);
@@ -22,6 +22,9 @@ const TransactionCard = ({ data, token, type } = {}) => {
     setSnackBarData({});
   };
 
+  console.log("TransactionCard data:", data);
+  console.log(`txType`, txType);
+
   const {
     id,
     value,
@@ -32,10 +35,11 @@ const TransactionCard = ({ data, token, type } = {}) => {
     service: { name: serviceName },
   } = data;
 
-  const deleteTransaction = async () => {
-    const format = "DD/MM/YYYY";
-    const today = moment(new Date(), format);
+  const format = "DD/MM/YYYY";
+  const today = moment(new Date(), format);
+  const isInFuture = today.isBefore(moment(day, format));
 
+  const deleteTransaction = async () => {
     if (today.isAfter(moment(day, format))) {
       resetSnackBarState();
       setSnackBarData({
@@ -58,10 +62,12 @@ const TransactionCard = ({ data, token, type } = {}) => {
     } else {
       setSnackBarData({
         text: "Agendamento cancelado com sucesso",
-        severity: "error",
+        severity: "success",
       });
+      onCancelCallback(id);
     }
     setOpenSnackBar(true);
+    setOpenConfirmModal(false);
   };
 
   return (
@@ -83,18 +89,18 @@ const TransactionCard = ({ data, token, type } = {}) => {
               style={{
                 marginBottom: 16,
                 textAlign: "center",
-                cursor: type !== "seller" ? "pointer" : "auto",
+                cursor: txType !== "seller" ? "pointer" : "auto",
                 color: blueColor,
                 fontFamily: "Futura",
               }}
               onClick={() => {
-                if (type !== "seller") return;
+                if (txType !== "seller") return;
                 history.push(`/companies/${sellerId}/services`, { data: data.seller });
               }}
               noWrap={true}
             >
               <i>
-                <strong>{type === "seller" ? `${firstName} ${lastName}` : sellerName}</strong>
+                <strong>{txType === "seller" ? `${firstName} ${lastName}` : sellerName}</strong>
               </i>
             </Typography>
             <Typography
@@ -141,7 +147,7 @@ const TransactionCard = ({ data, token, type } = {}) => {
             >
               {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)}
             </Typography>
-            {type !== "seller" && new Date(day) < new Date() && (
+            {txType === "buyer" && isInFuture && (
               <Button
                 style={{
                   position: "absolute",

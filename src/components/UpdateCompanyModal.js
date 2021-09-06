@@ -107,7 +107,11 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
       const { err, data } = await API.updateCompany(companyId, payload, token);
 
       if (err) {
-        setSnackBarData({ text: err.description, severity: "error" });
+        let msg = err.description;
+        if (err.code === 400) {
+          msg = "Preencha todos os campos requeridos";
+        }
+        setSnackBarData({ text: msg, severity: "error" });
         setOpenSnackBar(true);
         return;
       }
@@ -231,6 +235,7 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
               }}
               value={name}
               InputLabelProps={{ shrink: true }}
+              required={true}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
@@ -253,6 +258,7 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
               }}
               InputLabelProps={{ shrink: true }}
               value={email}
+              required={true}
             />
             <TextField
               label="Telefone"
@@ -262,6 +268,7 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
               }}
               InputLabelProps={{ shrink: true }}
               value={phone}
+              required={true}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
@@ -273,6 +280,7 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
               }}
               InputLabelProps={{ shrink: true }}
               value={address}
+              required={true}
             />
             <TextField
               label="CEP"
@@ -280,11 +288,14 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
               onChange={handlePostcodeChange}
               value={postcode}
               InputLabelProps={{ shrink: true }}
+              required={true}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }}>
             <FormControl style={{ flex: 1, marginRight: 8 }}>
-              <InputLabel id="state-select">UF</InputLabel>
+              <InputLabel id="state-select" required={true}>
+                UF
+              </InputLabel>
               <Select
                 id="state-select"
                 value={state}
@@ -305,7 +316,9 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
               </Select>
             </FormControl>
             <FormControl style={{ flex: 9, marginLeft: 8 }}>
-              <InputLabel id="city-select">Cidade</InputLabel>
+              <InputLabel id="city-select" required={true}>
+                Cidade
+              </InputLabel>
               <Select
                 id="city-select"
                 value={city}
@@ -326,7 +339,9 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }} InputLabelProps={{ shrink: true }}>
             <FormControl component="fieldset">
-              <FormLabel component="legend">Documento</FormLabel>
+              <FormLabel component="legend" required={true}>
+                Documento
+              </FormLabel>
               <RadioGroup row aria-label="position" name="position">
                 <FormControlLabel
                   value="CPF"
@@ -352,11 +367,12 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
               }}
               InputLabelProps={{ shrink: true }}
               value={document}
+              required={true}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }}>
             <div style={{ alignSelf: "center", marginRight: 8, flex: 1 }}>
-              <InputLabel shrink id="start-end-time-label">
+              <InputLabel shrink id="start-end-time-label" required={true}>
                 Horário de funcionamento
               </InputLabel>
             </div>
@@ -366,7 +382,9 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
             </div>
             <Divider orientation="vertical" flexItem style={{ marginLeft: 6 }} />
             <div style={{ alignSelf: "center", marginLeft: 16, padding: 0, flex: 1 }}>
-              <InputLabel id="open-days-label">Dias da semana</InputLabel>
+              <InputLabel id="open-days-label" required={true}>
+                Dias da semana
+              </InputLabel>
             </div>
             <div style={{ flex: 5 }}>
               <FormControl component="fieldset" name="days-checkbox">
@@ -395,7 +413,9 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16, flexDirection: "column" }}>
             <div style={{ alignSelf: "center", marginRight: 8, flex: 1 }}>
-              <InputLabel id="plans-label">Planos</InputLabel>
+              <InputLabel id="plans-label" required={true}>
+                Planos
+              </InputLabel>
             </div>
             <div style={{ alignSelf: "center", marginRight: 8, display: "flex", flex: 1 }}>
               {planOptions.map(({ id, name, value, selected }) => {
@@ -420,10 +440,10 @@ const UpdateCompanyModal = ({ open, setOpen, data = {}, dispatch }) => {
                       }}
                     >
                       <div style={{ flex: 1, alignSelf: "center" }}>
-                        <span style={{ fontSize: "1vw", fontWeight: "bold" }}>{name}</span>
+                        <span style={{ fontSize: "0.8vw", fontWeight: "bold" }}>{name}</span>
                       </div>
                       <div style={{ flex: 1, marginTop: 8 }}>
-                        <span style={{ fontSize: "1vw" }}>
+                        <span style={{ fontSize: "0.8vw" }}>
                           {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value)}
                         </span>
                       </div>

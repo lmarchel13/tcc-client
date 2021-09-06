@@ -10,7 +10,7 @@ import SnackBar from "./SnackBar";
 
 import { blueBg, blueColor } from "../utils/colors";
 import { API } from "../providers";
-import config from '../config'
+import config from "../config";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -50,17 +50,22 @@ const Register = () => {
     e.preventDefault();
     resetSnackBarState();
 
-    if (!formIsValid) return;
+    if (!formIsValid) {
+      setSnackBarData({ text: "Preencha todos os campos", severity: "error" });
+      setOpenSnackBar(true);
+      return;
+    }
 
     const payload = { firstName, lastName, email, password };
     const { err } = await API.register(payload);
 
     if (err) {
-      setSnackBarData({ text: err.description, severity: "error" });
+      setSnackBarData({ text: err.description || "Um erro occoreu durante o cadastro", severity: "error" });
       setOpenSnackBar(true);
-    } else {
-      history.push("/signin");
+      return;
     }
+
+    history.push("/signin");
   };
 
   const onSuccess = async (response) => {
@@ -86,7 +91,7 @@ const Register = () => {
         setSnackBarData({ text: err.description, severity: "error" });
         setOpenSnackBar(true);
       } else {
-        history.push("/");
+        history.push("/signin");
       }
     }
   };
@@ -181,7 +186,7 @@ const Register = () => {
                   buttonText="Registre-se com o Google"
                   onSuccess={(res) => onSuccess(res)}
                   onFailure={(e) => onFailure(e)}
-                  cookiePolicy={"single_host_origin"}                  
+                  cookiePolicy={"single_host_origin"}
                 />
               </div>
             </div>

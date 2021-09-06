@@ -1,14 +1,18 @@
 import React, { useState, useEffect, Fragment } from "react";
+import { useHistory } from "react-router-dom";
 import moment from "moment";
 import { connect } from "react-redux";
 import { Widget, addResponseMessage, addUserMessage, dropMessages } from "react-chat-widget";
 import { Typography, Paper, Button, Select, MenuItem, InputLabel, FormControl } from "@material-ui/core";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 import "./styles/futura.css";
 import "react-chat-widget/lib/styles.css";
 import "./styles/chat-widget.css";
 
 import SnackBar from "./SnackBar";
+import UpdateServiceModal from "./UpdateServiceModal";
+import ConfirmModal from "./ConfirmModal";
 
 import { API, Cache } from "../providers";
 import { blueColor, blueBg } from "../utils/colors";
@@ -25,6 +29,8 @@ const Service = ({
   authedUser,
   socket,
 }) => {
+  const history = useHistory();
+
   const [service, setService] = useState(null);
 
   const [day, setDay] = useState("");
@@ -34,6 +40,8 @@ const Service = ({
 
   const [snackBarData, setSnackBarData] = useState({});
   const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
 
   useEffect(() => {
     if (socket) {
@@ -46,6 +54,14 @@ const Service = ({
   const resetSnackBarState = () => {
     setOpenSnackBar(false);
     setSnackBarData({});
+  };
+
+  const isOwnService = () => {
+    if (!service) return false;
+    if (!service.company) return false;
+    if (!service.company.user) return false;
+
+    return service.company.user === authedUser.userId;
   };
 
   useEffect(() => {
@@ -228,6 +244,8 @@ const Service = ({
         setConversation(contextConversation);
       }
 
+      if (!contextConversation) return;
+
       const { err } = await API.sendMessage(contextConversation.id, payload, authedUser.jwt);
 
       if (err) {
@@ -243,6 +261,43 @@ const Service = ({
     setDay("");
     setTime("");
     setTimeOptions(timeOptions.filter((t) => t !== time));
+  };
+
+  const editService = () => {
+    setOpenUpdateModal(true);
+  };
+
+  const onUpdateCallback = (payload) => {
+    if (!payload) return;
+    const newService = {
+      ...service,
+      name: payload.name,
+      description: payload.description,
+      categoryId: payload.categoryId,
+      duration: payload.duration,
+      type: payload.type,
+      value: payload.value,
+    };
+    setService(newService);
+  };
+
+  const deleteService = async () => {
+    resetSnackBarState();
+    const token = Cache.getToken();
+    const { err } = await API.deleteService(service.id, token);
+    if (err) {
+      setSnackBarData({ text: err.description, severity: "error" });
+      setOpenSnackBar(true);
+    }
+
+    setOpenConfirmModal(false);
+
+    const updatedCompany = {
+      ...service.company,
+      services: service.company.services.filter((serviceId) => serviceId !== service.id),
+    };
+
+    history.push(`/companies/${service.company.id}/services`, { data: updatedCompany });
   };
 
   return (
@@ -262,6 +317,12 @@ const Service = ({
                 flexDirection: "column",
               }}
             >
+              <div>
+                <DeleteIcon
+                  style={{ float: "right", fontSize: "1vw", color: blueColor, cursor: "pointer" }}
+                  onClick={() => setOpenConfirmModal(true)}
+                />
+              </div>
               <Typography
                 variant="h4"
                 component="h3"
@@ -323,7 +384,8 @@ const Service = ({
                 {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(service.value)} (
                 {TYPES[service.type]})
               </Typography>
-              {authedUser && authedUser.jwt && authedUser.userId && (
+
+              {authedUser && authedUser.jwt && authedUser.userId && !isOwnService() && (
                 <div style={{ display: "flex", width: "60%", margin: "0 auto" }}>
                   <FormControl style={{ flex: 1, margin: 8 }}>
                     <InputLabel id="day-select" style={{ fontFamily: "Futura" }}>
@@ -357,7 +419,7 @@ const Service = ({
               )}
             </Paper>
 
-            {authedUser && authedUser.jwt && authedUser.userId && (
+            {authedUser && authedUser.jwt && authedUser.userId && !isOwnService() && (
               <Button
                 disabled={!day && !time}
                 style={{
@@ -372,10 +434,24 @@ const Service = ({
                 Agendar
               </Button>
             )}
+            {authedUser && authedUser.jwt && authedUser.userId && isOwnService() && (
+              <Button
+                style={{
+                  backgroundColor: blueBg,
+                  color: blueColor,
+                  width: "10%",
+                  margin: "0 auto",
+                  marginTop: 32,
+                }}
+                onClick={editService}
+              >
+                Editar
+              </Button>
+            )}
           </Fragment>
         )}
       </div>
-      {authedUser && authedUser.userId && authedUser.jwt && (
+      {authedUser && authedUser.userId && authedUser.jwt && !isOwnService() && (
         <Widget
           handleNewUserMessage={handleNewUserMessage}
           title="Enviar mensagem"
@@ -385,6 +461,19 @@ const Service = ({
         />
       )}
       <SnackBar data={snackBarData} open={openSnackBar} setOpen={setOpenSnackBar} />
+      <UpdateServiceModal
+        setOpen={setOpenUpdateModal}
+        open={openUpdateModal}
+        data={service}
+        onUpdateCallback={onUpdateCallback}
+      />
+      <ConfirmModal
+        setOpen={setOpenConfirmModal}
+        open={openConfirmModal}
+        title="Remover serviço"
+        text="Deseja realmente remover esse serviço?"
+        onSubmit={deleteService}
+      />
     </Fragment>
   );
 };

@@ -33,6 +33,12 @@ const Login = ({ dispatch }) => {
     e.preventDefault();
     resetSnackBarState();
 
+    if (!email || !password) {
+      setSnackBarData({ text: "Entre com seu email e senha", severity: "error" });
+      setOpenSnackBar(true);
+      return;
+    }
+
     const payload = { email, password };
     const { err, data } = await API.login(payload);
 

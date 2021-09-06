@@ -48,9 +48,7 @@ export const clearUserCompanies = () => {
 };
 
 export const updateUserCompanies = (payload) => {
-  const currentCompanies = getUserCompanies();
-
-  const otherCompanies = currentCompanies.filter((company) => company.id !== payload.id);
+  const otherCompanies = getUserCompanies().filter((company) => company.id !== payload.id);
 
   setUserCompanies([...otherCompanies, payload]);
 };

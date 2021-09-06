@@ -21,7 +21,7 @@ const WEEK_DAYS = {
   6: "Domingo",
 };
 
-const ServicesByCategoryCard = ({ service }) => {
+const ServicesByCategoryCard = ({ service } = {}) => {
   const history = useHistory();
   const [isHover, setIsHover] = useState(false);
 
@@ -32,7 +32,7 @@ const ServicesByCategoryCard = ({ service }) => {
     duration,
     type,
     value,
-    company: { id: companyId, name: companyName, openDays, startTime, endTime },
+    company: { id: companyId, name: companyName, openDays, startTime, endTime } = {},
   } = service;
 
   const buildOpenDays = ({ openDays, startTime, endTime }) => {

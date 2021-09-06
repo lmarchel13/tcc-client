@@ -126,6 +126,26 @@ export const createService = async (companyId, payload, token) => {
   }
 };
 
+export const updateService = async (companyId, serviceId, payload, token) => {
+  const endpoint = `/companies/${companyId}/services/${serviceId}`;
+  try {
+    const { data } = await instance.put(endpoint, payload, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const deleteService = async (serviceId, token) => {
+  const endpoint = `/services/${serviceId}`;
+  try {
+    const { data } = await instance.delete(endpoint, { headers: buildHeaders({ token }) });
+    return { data };
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
 export const getService = async (id) => {
   const endpoint = `/services/${id}`;
 

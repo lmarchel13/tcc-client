@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import Modal from "@material-ui/core/Modal";
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CreateServiceModal = ({ open, setOpen, categories, authedUser, companyId }) => {
+const UpdateServiceModal = ({ open, setOpen, authedUser, categories, data: service, onUpdateCallback }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
@@ -50,14 +50,15 @@ const CreateServiceModal = ({ open, setOpen, categories, authedUser, companyId }
     setSnackBarData({});
   };
 
-  const resetDefaultState = () => {
-    setName("");
-    setDescription("");
-    setCategoryId("");
-    setDuration("00:30");
-    setType("");
-    setValue("");
-  };
+  useEffect(() => {
+    if (!service) return;
+    setName(service.name);
+    setDescription(service.description);
+    setCategoryId(service.category);
+    setType(service.type);
+    setValue(service.value);
+    setDuration(service.duration);
+  }, [service]);
 
   const classes = useStyles();
   const top = 50;
@@ -76,7 +77,7 @@ const CreateServiceModal = ({ open, setOpen, categories, authedUser, companyId }
     };
 
     const token = authedUser.jwt;
-    const { err } = await API.createService(companyId, payload, token);
+    const { err } = await API.updateService(service.company.id, service.id, payload, token);
 
     if (err) {
       let msg = err.description;
@@ -85,9 +86,9 @@ const CreateServiceModal = ({ open, setOpen, categories, authedUser, companyId }
       }
       setSnackBarData({ text: msg, severity: "error" });
     } else {
-      setSnackBarData({ text: "Serviço criado com sucesso", severity: "success" });
+      setSnackBarData({ text: "Serviço atualizado com sucesso", severity: "success" });
       setOpen(false);
-      resetDefaultState();
+      onUpdateCallback(payload);
     }
 
     setOpenSnackBar(true);
@@ -111,22 +112,31 @@ const CreateServiceModal = ({ open, setOpen, categories, authedUser, companyId }
           }}
           className={classes.paper}
         >
-          <h2 style={{ marginBottom: 32, fontFamily: "Futura" }}>Criar serviço</h2>
+          <h2 style={{ marginBottom: 32, fontFamily: "Futura" }}>Atualizar serviço</h2>
 
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
-            <TextField label="Nome" style={{ flex: 1 }} onChange={(e) => setName(e.target.value)} required={true} />
+            <TextField
+              label="Nome"
+              style={{ flex: 1 }}
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              focused={true}
+              required={true}
+            />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
             <TextField
               label="Descrição"
               style={{ flex: 1 }}
               onChange={(e) => setDescription(e.target.value)}
+              value={description}
+              focused={true}
               required={true}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }}>
             <FormControl style={{ flex: 1, marginRight: 8 }}>
-              <InputLabel required={true} id="category-select">
+              <InputLabel id="category-select" required={true}>
                 Categoria
               </InputLabel>
               <Select id="category-select" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
@@ -154,12 +164,14 @@ const CreateServiceModal = ({ open, setOpen, categories, authedUser, companyId }
                   control={<Radio style={{ color: blueColor }} />}
                   label="Valor fixo"
                   onChange={(e) => setType(e.target.value)}
+                  checked={type === "fixed"}
                 />
                 <FormControlLabel
                   value="by-hour"
                   control={<Radio style={{ color: blueColor }} />}
                   label="Por hora"
                   onChange={(e) => setType(e.target.value)}
+                  checked={type === "by-hour"}
                 />
               </RadioGroup>
             </FormControl>{" "}
@@ -188,7 +200,7 @@ const CreateServiceModal = ({ open, setOpen, categories, authedUser, companyId }
             style={{ backgroundColor: blueBg, color: blueColor, width: "70%", margin: "0 auto", marginTop: 16 }}
             onClick={onSubmit}
           >
-            Criar
+            Atualizar
           </Button>
         </div>
       </Modal>
@@ -201,4 +213,4 @@ const mapStateToProps = ({ authedUser, companies, categories }) => {
   return { authedUser, companies, categories };
 };
 
-export default connect(mapStateToProps)(CreateServiceModal);
+export default connect(mapStateToProps)(UpdateServiceModal);

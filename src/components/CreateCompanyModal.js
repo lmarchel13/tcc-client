@@ -105,7 +105,11 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
       const { err, data } = await API.createCompany(payload, token);
 
       if (err) {
-        setSnackBarData({ text: err.description, severity: "error" });
+        let msg = err.description;
+        if (err.code === 400) {
+          msg = "Preencha todos os campos requeridos";
+        }
+        setSnackBarData({ text: msg, severity: "error" });
       } else {
         setSnackBarData({ text: "Empresa criada com sucesso", severity: "success" });
 
@@ -224,6 +228,7 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setName(e.target.value);
               }}
+              required={true}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
@@ -242,6 +247,7 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              required={true}
             />
             <TextField
               label="Telefone"
@@ -249,6 +255,7 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setPhone(e.target.value);
               }}
+              required={true}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%" }}>
@@ -258,13 +265,16 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setAddress(e.target.value);
               }}
+              required={true}
             />
-            <TextField label="CEP" style={{ flex: 1, marginLeft: 8 }} onChange={handlePostcodeChange} />
+            <TextField label="CEP" style={{ flex: 1, marginLeft: 8 }} onChange={handlePostcodeChange} required={true} />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }}>
             <FormControl style={{ flex: 1, marginRight: 8 }}>
-              <InputLabel id="state-select">UF</InputLabel>
-              <Select id="state-select" value={state} onChange={(e) => setState(e.target.value)}>
+              <InputLabel id="state-select" required={true}>
+                UF
+              </InputLabel>
+              <Select id="state-select" value={state} onChange={(e) => setState(e.target.value)} required={true}>
                 {stateOptions &&
                   stateOptions.length &&
                   stateOptions.map(({ state }) => {
@@ -277,8 +287,10 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               </Select>
             </FormControl>
             <FormControl style={{ flex: 9, marginLeft: 8 }}>
-              <InputLabel id="city-select">Cidade</InputLabel>
-              <Select id="city-select" value={city} onChange={(e) => setCity(e.target.value)}>
+              <InputLabel id="city-select" required={true}>
+                Cidade
+              </InputLabel>
+              <Select id="city-select" value={city} onChange={(e) => setCity(e.target.value)} required={true}>
                 {cityOptions &&
                   cityOptions.length &&
                   cityOptions.map(({ city }) => {
@@ -293,7 +305,9 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }}>
             <FormControl component="fieldset">
-              <FormLabel component="legend">Documento</FormLabel>
+              <FormLabel component="legend" required={true}>
+                Documento
+              </FormLabel>
               <RadioGroup row aria-label="position" name="position">
                 <FormControlLabel
                   value="CPF"
@@ -315,11 +329,14 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
               onChange={(e) => {
                 setDocument(e.target.value);
               }}
+              required={true}
             />
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16 }}>
             <div style={{ alignSelf: "center", marginRight: 8, flex: 1 }}>
-              <InputLabel id="start-end-time-label">Horário de funcionamento</InputLabel>
+              <InputLabel id="start-end-time-label" required={true}>
+                Horário de funcionamento
+              </InputLabel>
             </div>
             <div style={{ display: "flex", marginLeft: 8, flex: 1 }}>
               <TimePicker label="Abertura" time={startTime} setTime={setStartTime} defaultValue="08:00" />
@@ -327,7 +344,9 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
             </div>
             <Divider orientation="vertical" flexItem style={{ marginLeft: 6 }} />
             <div style={{ alignSelf: "center", marginLeft: 16, padding: 0, flex: 1 }}>
-              <InputLabel id="open-days-label">Dias da semana</InputLabel>
+              <InputLabel id="open-days-label" required={true}>
+                Dias da semana
+              </InputLabel>
             </div>
             <div style={{ flex: 5 }}>
               <FormControl component="fieldset" name="days-checkbox">
@@ -350,7 +369,9 @@ const CreateCompanyModal = ({ open, setOpen, dispatch }) => {
           </div>
           <div style={{ display: "flex", flex: 1, width: "100%", marginTop: 16, flexDirection: "column" }}>
             <div style={{ alignSelf: "center", marginRight: 8, flex: 1 }}>
-              <InputLabel id="plans-label">Planos</InputLabel>
+              <InputLabel id="plans-label" required={true}>
+                Planos
+              </InputLabel>
             </div>
             <div style={{ alignSelf: "center", marginRight: 8, display: "flex", flex: 1 }}>
               {planOptions.map(({ id, name, value, selected }) => {

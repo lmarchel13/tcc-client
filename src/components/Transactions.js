@@ -127,6 +127,10 @@ const Transactions = ({ authedUser }) => {
     link.click();
   };
 
+  const onCancelCallback = (id) => {
+    setBuyerTransactions(buyerTransactions.filter((t) => t.id !== id));
+  };
+
   return (
     <Fragment>
       <div style={{ display: "flex", flex: 1, width: "70%", margin: "0 auto", marginTop: 32 }}>
@@ -165,7 +169,13 @@ const Transactions = ({ authedUser }) => {
                 >
                   {buyerTransactions && buyerTransactions.length > 0 ? (
                     buyerTransactions.map((bt) => (
-                      <TransactionCard key={bt.id} data={bt} token={authedUser.jwt} type="buyer" />
+                      <TransactionCard
+                        key={bt.id}
+                        data={bt}
+                        token={authedUser.jwt}
+                        type="buyer"
+                        onCancelCallback={onCancelCallback}
+                      />
                     ))
                   ) : (
                     <Paper
@@ -223,7 +233,13 @@ const Transactions = ({ authedUser }) => {
                 >
                   {sellerTransactions && sellerTransactions.length > 0 ? (
                     sellerTransactions.map((bt) => (
-                      <TransactionCard key={bt.id} data={bt} token={authedUser.jwt} type="seller" />
+                      <TransactionCard
+                        key={bt.id}
+                        data={bt}
+                        token={authedUser.jwt}
+                        type="seller"
+                        onCancelCallback={onCancelCallback}
+                      />
                     ))
                   ) : (
                     <Paper
